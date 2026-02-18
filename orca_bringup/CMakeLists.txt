@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.22.1)
 project(orca_bringup)
 
 find_package(ament_cmake REQUIRED)
+find_package(rclpy REQUIRED)
 
 ament_environment_hooks(hooks/setup.dsv)
 
@@ -46,5 +47,12 @@ install(
   rviz
   worlds
   DESTINATION share/${PROJECT_NAME})
+
+# Install Python modules
+install(
+  PROGRAMS # PROGRAMS sets execute bits, FILES clears them
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/mission_runner.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

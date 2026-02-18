@@ -7,9 +7,21 @@
   <maintainer email="clyde@mcqueen.net">Clyde McQueen</maintainer>
   <license>MIT</license>
 
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
   <depend>nav_msgs</depend>
+  <depend>action_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>std_srvs</depend>
+  <depend>orca_msgs</depend>
+  <depend>rclpy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav2_msgs</depend>
+
   <depend>orb_slam3_ros</depend>
   <depend>orca_bridge</depend>
+
+  <test_depend>python3-pytest</test_depend>
 
   <!-- Only required for simulation -->
   <!-- <depend>ardupilot_gazebo</depend> -->

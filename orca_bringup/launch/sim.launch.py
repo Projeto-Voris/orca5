@@ -168,7 +168,7 @@ def generate_launch_description():
         # vectored_6dof as the model, AND the default params must set magic ArduSub parameter FRAME_CONFIG to 2.0.
         # Yaw is provided by Gazebo, so the start yaw value is ignored.
         ExecuteProcess(
-            cmd=['ardusub', '-S', '--wipe', '-M', 'JSON', '-I0', '--home', '47.6302,-122.3982391,-0.1,0',
+            cmd=['/home/biancarosa/ardupilot/build/sitl/bin/ardusub', '-S', '--wipe', '-M', 'JSON', '-I0', '--home', '47.6302,-122.3982391,-0.1,0',
                  '--defaults', sub_vpe_parm_files if LaunchConfiguration('use_vpe') else sub_vpd_parm_files],
             output='screen',
             condition=IfCondition(LaunchConfiguration('ardusub')),
