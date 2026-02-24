@@ -120,7 +120,7 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        camera_link:
+        left_camera_link:
           Value: false
       Marker Scale: 3
       Name: TF

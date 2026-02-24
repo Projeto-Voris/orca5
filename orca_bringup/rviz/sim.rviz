@@ -120,7 +120,9 @@ Visualization Manager:
         All Enabled: false
         base_link:
           Value: true
-        camera_link:
+        left_camera_link:
+          Value: false
+        right_camera_link:
           Value: false
         camera_sensor:
           Value: true
@@ -138,7 +140,8 @@ Visualization Manager:
       Tree:
         map:
           base_link:
-            camera_link:
+            left_camera_link:
+            right_camera_link:
               camera_sensor:
                 {}
           slam:

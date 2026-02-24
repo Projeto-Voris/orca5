@@ -64,7 +64,7 @@ class MonoSlamBridge(rclpy.node.Node):
         self.t_slam_world = geometry.Pose()
         self.t_slam_world.set_euler(math.pi, 0, 0)
 
-        # Static transform base_link (base) -> camera_link (link) should be available, listen for it
+        # Static transform base_link (base) -> left_camera_link (link) should be available, listen for it
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
         self.t_link_base = None
@@ -126,7 +126,7 @@ class MonoSlamBridge(rclpy.node.Node):
         tf_msg.transform = self.t_slam_world.to_transform_msg()
         tf_static_broadcaster.sendTransform(tf_msg)
 
-        tf_msg.header.frame_id = 'camera_link'
+        tf_msg.header.frame_id = 'left_camera_link'
         tf_msg.child_frame_id = 'camera_sensor'
         tf_msg.transform = geometry.Pose.T_FLU_OPENCV.to_transform_msg()
         tf_static_broadcaster.sendTransform(tf_msg)
@@ -192,11 +192,11 @@ class MonoSlamBridge(rclpy.node.Node):
         if self.t_link_base is None:
             # now = self.get_clock().now()
             msg_time = stamp_to_time(msg.header.stamp)
-            if self.tf_buffer.can_transform('camera_link', 'base_link', msg_time):
-                t_link_base = self.tf_buffer.lookup_transform('camera_link', 'base_link', msg_time)
+            if self.tf_buffer.can_transform('left_camera_link', 'base_link', msg_time):
+                t_link_base = self.tf_buffer.lookup_transform('left_camera_link', 'base_link', msg_time)
                 self.t_link_base = geometry.Pose.from_transform_msg(t_link_base.transform)
             else:
-                self.get_logger().warn('Cannot get tf from base_link to camera_link, dropping slam message', throttle_duration_sec=1.0)
+                self.get_logger().warn('Cannot get tf from base_link to left_camera_link, dropping slam message', throttle_duration_sec=1.0)
                 flags |= orca_msgs.msg.BridgeStatus.WAIT_TRANSFORMS
 
         # Wait for sonar rangefinder readings
@@ -253,7 +253,7 @@ class MonoSlamBridge(rclpy.node.Node):
         # Find the pose of the camera sensor in the SLAM map frame
         t_slam_camera = self.t_slam_world.mult(t_world_camera)
 
-        # Find the pose of camera_link (ENU) in the SLAM map frame
+        # Find the pose of left_camera_link (ENU) in the SLAM map frame
         t_slam_link = t_slam_camera.mult(geometry.Pose.T_OPENCV_FLU)
 
         # Find the pose of the base link (the ROV) in the SLAM map frame

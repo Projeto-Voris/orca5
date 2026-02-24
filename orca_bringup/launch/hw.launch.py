@@ -72,7 +72,7 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('orb')),
         ),
 
-        # Publish the static base_link -> camera_link transform.
+        # Publish the static base_link -> left_camera_link transform.
         # Modify this for your vehicle
         Node(
             package='tf2_ros',
@@ -88,7 +88,7 @@ def generate_launch_description():
                 '--pitch', str(math.pi / 2),
                 '--yaw', '0',
                 '--frame-id', 'base_link',
-                '--child-frame-id', 'camera_link',
+                '--child-frame-id', 'left_camera_link',
             ],
         ),
 

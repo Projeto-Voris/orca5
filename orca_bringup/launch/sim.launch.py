@@ -73,7 +73,7 @@ def generate_launch_description():
             executable='image_bridge',
             output='screen',
             name='image_bridge',
-            arguments=['image_raw'],
+            arguments=['left_image_raw', 'right_image_raw'],
         ),
 
         # Bridge other gz topics, including /clock (rviz2 decay time won't work correctly w/o this)
@@ -87,7 +87,7 @@ def generate_launch_description():
             ],
         ),
 
-        # Publish a camera info message, required for rviz (not used by orb_slam3_ros)
+        # Publish a left camera info message, required for rviz (not used by orb_slam3_ros)
         Node(
             package='orca_bridge',
             executable='camera_info_publisher.py',
@@ -98,7 +98,7 @@ def generate_launch_description():
             }],
         ),
 
-        # Publish the static base_link -> camera_link transform.
+        # Publish the static base_link -> left_camera_link transform.
         # This must match the transform in orca5/model.sdf (see camera_* vars in generate_model.py)
         Node(
             package='tf2_ros',
@@ -114,7 +114,27 @@ def generate_launch_description():
                 '--pitch', str(math.pi / 2),
                 '--yaw', '0',
                 '--frame-id', 'base_link',
-                '--child-frame-id', 'camera_link',
+                '--child-frame-id', 'left_camera_link',
+            ],
+        ),
+
+        # Publish the static base_link -> right_camera_link transform.
+        # This must match the transform in orca5/model.sdf (see camera_* vars in generate_model.py)
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            parameters=[{
+                'use_sim_time': True,
+            }],
+            arguments=[
+                '--x', '0',
+                '--y', '0',
+                '--z', '0',
+                '--roll', '0',
+                '--pitch', str(math.pi / 2),
+                '--yaw', '0',
+                '--frame-id', 'base_link',
+                '--child-frame-id', 'right_camera_link',
             ],
         ),
 

@@ -128,14 +128,18 @@ control_offset = -0.5
 use_angvel_cmd = False
 
 # Set by update_globals()
-cw_control_multiplier = 0   # Thrusters 3, 4 and 6
-ccw_control_multiplier = 0  # Thrusters 1, 2 and 5
+# cw_control_multiplier = 0   # Thrusters 3, 4 and 6
+cw_control_multiplier = 100 
+# ccw_control_multiplier = 0  # Thrusters 1, 2 and 5
+ccw_control_multiplier = 100
 thruster1_topic = "/model/orca5/joint/thruster1_joint/cmd_"
 thruster2_topic = "/model/orca5/joint/thruster2_joint/cmd_"
 thruster3_topic = "/model/orca5/joint/thruster3_joint/cmd_"
 thruster4_topic = "/model/orca5/joint/thruster4_joint/cmd_"
 thruster5_topic = "/model/orca5/joint/thruster5_joint/cmd_"
 thruster6_topic = "/model/orca5/joint/thruster6_joint/cmd_"
+thruster7_topic = "/model/orca5/joint/thruster7_joint/cmd_"
+thruster8_topic = "/model/orca5/joint/thruster8_joint/cmd_"
 
 # Fossen equation, see "Guidance and Control of Ocean Vehicles" p. 246
 def thrust_to_ang_vel(thrust):
@@ -153,6 +157,8 @@ def update_globals():
     global thruster4_topic
     global thruster5_topic
     global thruster6_topic
+    global thruster7_topic
+    global thruster8_topic
 
     if use_angvel_cmd:
         print("control method: angular velocity")
@@ -162,6 +168,8 @@ def update_globals():
         thruster4_topic += "vel"
         thruster5_topic += "vel"
         thruster6_topic += "vel"
+        thruster7_topic += "vel"
+        thruster8_topic += "vel"
 
         # Angular velocity range in rad/s
         # Thrust ~ sqrt(angular velocity), so the curves are quite different
@@ -176,6 +184,8 @@ def update_globals():
         thruster4_topic += "thrust"
         thruster5_topic += "thrust"
         thruster6_topic += "thrust"
+        thruster7_topic += "thrust"
+        thruster8_topic += "thrust"
 
         # Force range [-50, 50] in N
         cw_control_multiplier = max_thrust * 2
