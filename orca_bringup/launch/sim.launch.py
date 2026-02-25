@@ -73,6 +73,7 @@ def generate_launch_description():
             executable='image_bridge',
             output='screen',
             name='image_bridge',
+            # incluir topico ros para camera da direita
             arguments=['left_image_raw', 'right_image_raw'],
         ),
 

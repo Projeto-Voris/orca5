@@ -8,33 +8,27 @@
     <!-- total_mass: @total_mass -->
     <!-- displaced_mass: @displaced_mass -->
 
+    <!-- incluir camera da direita  -->
+
     <link name="base_link">
       <inertial>
         <pose>0 0 @mass_z 0 0 0</pose>
-        <!-- <mass>@base_mass</mass> -->
-        <mass>15</mass>
+        <mass>@base_mass</mass>
         <inertia>
-          <!-- <ixx>@ixx</ixx>
+          <ixx>@ixx</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
           <iyy>@iyy</iyy>
           <iyz>0</iyz>
-          <izz>@izz</izz> -->
-          <ixx>0.26</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>0.23</iyy>
-          <iyz>0</iyz>
-          <izz>0.37</izz>
+          <izz>@izz</izz>
         </inertia>
       </inertial>
 
       <visual name="base_link_visual">
-        <pose>0 0 0 0 0 @d90</pose>
         <geometry>
           <mesh>
-            <uri>model://orca5/meshes/bluerov2_heavy_skid.dae</uri>
-            <scale>1 1 1</scale>
+            <uri>model://orca5/meshes/bluerov2.dae</uri>
+            <scale>0.025 0.025 0.025</scale>
           </mesh>
         </geometry>
       </visual>
@@ -44,8 +38,7 @@
         <pose>0 0 @volume_z 0 0 0</pose>
         <geometry>
           <box>
-            <!-- <size>@collision_x @collision_y @collision_z</size> -->
-            <size>0.457 0.575 0.06506286173008947</size>
+            <size>@collision_x @collision_y @collision_z</size>
           </box>
         </geometry>
       </collision>
@@ -54,11 +47,9 @@
       <sensor name="imu_sensor" type="imu">
         <!-- Transform from the Gazebo body frame (x-forward, y-left, z-up)
              to the ArduPilot body frame (x-forward, y-right, z-down) -->
-        <!-- <pose>@imu_x @imu_y @imu_z @d180 0 0</pose> -->
-        <pose>0 0 0 @d180 0 0</pose>
+        <pose>@imu_x @imu_y @imu_z @d180 0 0</pose>
         <always_on>1</always_on>
         <update_rate>1000.0</update_rate>
-        <!-- <update_rate>330.0</update_rate> -->
       </sensor>
 
     </link>
@@ -84,28 +75,21 @@
       <mQ>0</mQ>
       <nR>0</nR>
       <!-- Second order stability derivative: -->
-      <!-- <xUabsU>@xUabsU</xUabsU>
+      <xUabsU>@xUabsU</xUabsU>
       <yVabsV>@yVabsV</yVabsV>
       <zWabsW>@zWabsW</zWabsW>
       <kPabsP>@kPabsP</kPabsP>
       <mQabsQ>@mQabsQ</mQabsQ>
-      <nRabsR>@nRabsR</nRabsR> -->
-      <xUabsU>-58.42</xUabsU>
-      <yVabsV>-55.137</yVabsV>
-      <zWabsW>-124.818</zWabsW>
-      <kPabsP>-4.0</kPabsP>
-      <mQabsQ>-4.0</mQabsQ>
-      <nRabsR>-4.0</nRabsR>
+      <nRabsR>@nRabsR</nRabsR>
     </plugin>
 
     <link name="thruster1">
-      <!-- <pose>@thruster_x -@thruster_y 0 -@d90 @d90 -@d45</pose> -->
-      <pose>0.138 -0.098 -0.0137 -@d90 @d90 -@d45</pose>
+      <pose>@thruster_x -@thruster_y 0 -@d90 @d90 -@d45</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 @d90 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://orca5/meshes/t200-ccw-prop.dae</uri>
+            <uri>model://orca5/meshes/t200-cw-prop.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -123,8 +107,7 @@
     </link>
 
     <link name="thruster2">
-      <!-- <pose>@thruster_x @thruster_y 0 -@d90 @d90 -@d135</pose> -->
-      <pose>0.138 0.098 -0.0137 -@d90 @d90 -@d135</pose>
+      <pose>@thruster_x @thruster_y 0 -@d90 @d90 -@d135</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -@d90 0 0</pose>
         <geometry>
@@ -147,13 +130,12 @@
     </link>
 
     <link name="thruster3">
-      <!-- <pose>-@thruster_x -@thruster_y 0 -@d90 @d90 @d45</pose> -->
-      <pose>-0.1465 -0.1065 -0.0137 -@d90 @d90 @d45</pose>
+      <pose>-@thruster_x -@thruster_y 0 -@d90 @d90 @d45</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -@d90 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://orca5/meshes/t200-cw-prop.dae</uri>
+            <uri>model://orca5/meshes/t200-ccw-prop.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -171,8 +153,7 @@
     </link>
 
     <link name="thruster4">
-      <!-- <pose>-@thruster_x @thruster_y 0 -@d90 @d90 @d135</pose> -->
-      <pose>-0.1465 0.1065 -0.0137 -@d90 @d90 @d135</pose>
+      <pose>-@thruster_x @thruster_y 0 -@d90 @d90 @d135</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 @d90 0 0</pose>
         <geometry>
@@ -195,8 +176,7 @@
     </link>
 
     <link name="thruster5">
-      <!-- <pose>0 -@vert_thruster_y @vert_thruster_z 0 0 0</pose> -->
-      <pose>0.120 -0.218 0.048 0 0 0</pose>
+      <pose>0 -@vert_thruster_y @vert_thruster_z 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -@d90 0 @d90</pose>
         <geometry>
@@ -219,8 +199,7 @@
     </link>
 
     <link name="thruster6">
-      <!-- <pose>0 @vert_thruster_y @vert_thruster_z 0 0 0</pose> -->
-      <pose>0.120 0.218 0.048 0 0 0</pose>
+      <pose>0 @vert_thruster_y @vert_thruster_z 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 @d90 0 @d90</pose>
         <geometry>
@@ -241,55 +220,6 @@
         </inertia>
       </inertial>
     </link>
-
-    <link name="thruster7">
-      <!-- <pose>0 -@vert_thruster_y @vert_thruster_z 0 0 0</pose> -->
-      <pose>-0.120 -0.218 0.048 0 0 0</pose>
-      <visual name="thruster_prop_visual">
-        <pose>0 0 0 @d90 0 @d90</pose>
-        <geometry>
-          <mesh>
-            <uri>model://orca5/meshes/t200-cw-prop.dae</uri>
-          </mesh>
-        </geometry>
-      </visual>
-      <inertial>
-        <mass>@propeller_mass</mass>
-        <inertia>
-          <ixx>@propeller_ixx</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>@propeller_iyy</iyy>
-          <iyz>0</iyz>
-          <izz>@propeller_izz</izz>
-        </inertia>
-      </inertial>
-    </link>
-
-    <link name="thruster8">
-      <!-- <pose>0 @vert_thruster_y @vert_thruster_z 0 0 0</pose> -->
-      <pose>-0.120 0.218 0.048 0 0 0</pose>
-      <visual name="thruster_prop_visual">
-        <pose>0 0 0 @d90 0 @d90</pose>
-        <geometry>
-          <mesh>
-            <uri>model://orca5/meshes/t200-ccw-prop.dae</uri>
-          </mesh>
-        </geometry>
-      </visual>
-      <inertial>
-        <mass>@propeller_mass</mass>
-        <inertia>
-          <ixx>@propeller_ixx</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>@propeller_iyy</iyy>
-          <iyz>0</iyz>
-          <izz>@propeller_izz</izz>
-        </inertia>
-      </inertial>
-    </link>
-        
 
     <joint name="thruster1_joint" type="revolute">
       <parent>base_link</parent>
@@ -334,22 +264,6 @@
     <joint name="thruster6_joint" type="revolute">
       <parent>base_link</parent>
       <child>thruster6</child>
-      <axis>
-        <xyz>0 0 -1</xyz>
-      </axis>
-    </joint>
-
-    <joint name="thruster7_joint" type="revolute">
-      <parent>base_link</parent>
-      <child>thruster7</child>
-      <axis>
-        <xyz>0 0 -1</xyz>
-      </axis>
-    </joint>
-
-    <joint name="thruster8_joint" type="revolute">
-      <parent>base_link</parent>
-      <child>thruster8</child>
       <axis>
         <xyz>0 0 -1</xyz>
       </axis>
@@ -430,32 +344,6 @@
       <use_angvel_cmd>@use_angvel_cmd</use_angvel_cmd>
     </plugin>
 
-    <plugin
-        filename="gz-sim-thruster-system"
-        name="gz::sim::systems::Thruster">
-      <namespace>orca5</namespace>
-      <joint_name>thruster7_joint</joint_name>
-      <!-- Reverse spin to balance torque -->
-      <thrust_coefficient>-@thrust_coefficient</thrust_coefficient>
-      <fluid_density>@fluid_density</fluid_density>
-      <propeller_diameter>@propeller_diameter</propeller_diameter>
-      <velocity_control>true</velocity_control>
-      <use_angvel_cmd>@use_angvel_cmd</use_angvel_cmd>
-    </plugin>
-
-    <plugin
-        filename="gz-sim-thruster-system"
-        name="gz::sim::systems::Thruster">
-      <namespace>orca5</namespace>
-      <joint_name>thruster8_joint</joint_name>
-      <!-- Reverse spin to balance torque -->
-      <thrust_coefficient>@thrust_coefficient</thrust_coefficient>
-      <fluid_density>@fluid_density</fluid_density>
-      <propeller_diameter>@propeller_diameter</propeller_diameter>
-      <velocity_control>true</velocity_control>
-      <use_angvel_cmd>@use_angvel_cmd</use_angvel_cmd>
-    </plugin>
-
     <plugin name="ArduPilotPlugin" filename="libArduPilotPlugin.so">
       <!-- Port settings -->
       <fdm_addr>127.0.0.1</fdm_addr>
@@ -529,25 +417,6 @@
         <offset>@control_offset</offset>
         <multiplier>@cw_control_multiplier</multiplier>
       </control>
-      <control channel="6">
-        <jointName>thruster7_joint</jointName>
-        <servo_min>@servo_min</servo_min>
-        <servo_max>@servo_max</servo_max>
-        <type>COMMAND</type>
-        <cmd_topic>@thruster7_topic</cmd_topic>
-        <offset>@control_offset</offset>
-        <multiplier>@cw_control_multiplier</multiplier>
-      </control>
-      <control channel="7">
-        <jointName>thruster8_joint</jointName>
-        <servo_min>@servo_min</servo_min>
-        <servo_max>@servo_max</servo_max>
-        <type>COMMAND</type>
-        <cmd_topic>@thruster8_topic</cmd_topic>
-        <offset>@control_offset</offset>
-        <multiplier>@cw_control_multiplier</multiplier>
-      </control>
-      
 
      <!--
         Configure ArduSub to use a SITL rangefinder backend:
@@ -568,8 +437,7 @@
 
     </plugin>
 
-    <!-- Left camera link -->
-    <!-- Link 1 -->
+    <!-- Left Camera link -->
     <link name="left_camera_link">
       <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
       <pose>0.19 0.075 -0.201 0 @d90 0</pose>
@@ -587,18 +455,15 @@
       </visual>
       <sensor name="sim_camera" type="camera">
         <pose>0 0 @camera_sensor_z 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
         <camera>
-          <!-- <horizontal_fov>1.4</horizontal_fov> -->
-          <horizontal_fov>1.6</horizontal_fov>
+          <horizontal_fov>1.4</horizontal_fov>
           <image>
-            <width>1600</width> <!-- 800 -->
-            <height>1200</height> <!-- 600 -->
+            <width>800</width>
+            <height>600</height>
           </image>
           <clip>
             <near>0.2</near>
-            <!-- <far>@camera_far_clip</far> -->
-            <far>10</far>
+            <far>@camera_far_clip</far>
           </clip>
         </camera>
         <always_on>1</always_on>
@@ -610,8 +475,7 @@
         <gz_frame_id>camera_sensor</gz_frame_id>
       </sensor>
       <inertial>
-        <!-- <mass>@camera_mass</mass> -->
-        <mass>0.001</mass>
+        <mass>@camera_mass</mass>
         <inertia>
           <ixx>@camera_ixx</ixx>
           <ixy>0</ixy>
@@ -623,16 +487,15 @@
       </inertial>
     </link>
 
-    <!-- Attach left_camera_link to base_link -->
+    <!-- Attach camera_link to base_link -->
     <joint name="left_camera_joint" type="fixed">
       <parent>base_link</parent>
       <child>left_camera_link</child>
     </joint>
 
-    <!-- Right camera link -->
-    <!-- Link 2 -->
+    <!-- Right Camera link -->
     <link name="right_camera_link">
-    <!-- <pose>@camera_x -@camera_y @camera_z 0 @d90 0</pose> -->
+      <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
       <pose>0.19 -0.075 -0.201 0 @d90 0</pose>
       <visual name="camera_tube">
         <geometry>
@@ -648,17 +511,15 @@
       </visual>
       <sensor name="sim_camera" type="camera">
         <pose>0 0 @camera_sensor_z 0 0 0</pose>
-        <!-- <pose>0 0 0 0 0 0</pose> -->
         <camera>
-          <horizontal_fov>1.6</horizontal_fov> <!-- 1.4 -->
+          <horizontal_fov>1.4</horizontal_fov>
           <image>
-            <width>1600</width> <!-- 800 -->
-            <height>1200</height> <!-- 600 -->
+            <width>800</width>
+            <height>600</height>
           </image>
           <clip>
             <near>0.2</near>
-            <!-- <far>@camera_far_clip</far> -->
-            <far>10</far>
+            <far>@camera_far_clip</far>
           </clip>
         </camera>
         <always_on>1</always_on>
@@ -670,8 +531,7 @@
         <gz_frame_id>camera_sensor</gz_frame_id>
       </sensor>
       <inertial>
-        <!-- <mass>@camera_mass</mass> -->
-        <mass>0.001</mass>
+        <mass>@camera_mass</mass>
         <inertia>
           <ixx>@camera_ixx</ixx>
           <ixy>0</ixy>
@@ -683,7 +543,7 @@
       </inertial>
     </link>
 
-    <!-- Attach right_camera_link to base_link -->
+    <!-- Attach camera_link to base_link -->
     <joint name="right_camera_joint" type="fixed">
       <parent>base_link</parent>
       <child>right_camera_link</child>
