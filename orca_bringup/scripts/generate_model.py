@@ -50,9 +50,9 @@ camera_far_clip = 5  # The furthest distance the camera can see
 # Hack for now: align camera and IMU positions
 
 # Camera position
-camera_x = 0
-camera_y = 0
-camera_z = 0
+camera_x = 0.19
+camera_y = 0.075
+camera_z = -0.201
 camera_sensor_z = -0.1
 
 # IMU position

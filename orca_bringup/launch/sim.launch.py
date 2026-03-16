@@ -73,7 +73,6 @@ def generate_launch_description():
             executable='image_bridge',
             output='screen',
             name='image_bridge',
-            # incluir topico ros para camera da direita
             arguments=['left_image_raw', 'right_image_raw'],
         ),
 
@@ -95,7 +94,17 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'camera_info_url': 'file://' + os.path.join(orca_bringup_dir, 'config', 'sim_camera.yaml'),
-                'frame_id': 'camera_sensor',
+                'frame_id': 'left_camera_sensor',
+            }],
+        ),
+
+        Node(
+            package='orca_bridge',
+            executable='camera_info_publisher.py',
+            output='screen',
+            parameters=[{
+                'camera_info_url': 'file://' + os.path.join(orca_bringup_dir, 'config', 'sim_camera.yaml'),
+                'frame_id': 'right_camera_sensor',
             }],
         ),
 
@@ -108,9 +117,9 @@ def generate_launch_description():
                 'use_sim_time': True,
             }],
             arguments=[
-                '--x', '0',
-                '--y', '0',
-                '--z', '0',
+                '--x', '0.19',
+                '--y', '0.075',
+                '--z', '-0.201',
                 '--roll', '0',
                 '--pitch', str(math.pi / 2),
                 '--yaw', '0',
@@ -128,9 +137,9 @@ def generate_launch_description():
                 'use_sim_time': True,
             }],
             arguments=[
-                '--x', '0',
-                '--y', '0',
-                '--z', '0',
+                '--x', '0.19',
+                '--y', '-0.075',
+                '--z', '-0.201',
                 '--roll', '0',
                 '--pitch', str(math.pi / 2),
                 '--yaw', '0',
@@ -146,7 +155,7 @@ def generate_launch_description():
                 '--include-hidden-topics',
                 '/bridge_status',
                 '/camera_info',
-                '/camera_pose',
+                '/camera_pose/scaled',
                 '/ekf_pose',
                 '/ekf_status',
                 '/model/orca5/odometry',

@@ -25,6 +25,7 @@
       </inertial>
 
       <visual name="base_link_visual">
+        <!-- <pose>0 0 0 0 0 @d90</pose> -->
         <geometry>
           <mesh>
             <uri>model://orca5/meshes/bluerov2.dae</uri>
@@ -440,7 +441,7 @@
     <!-- Left Camera link -->
     <link name="left_camera_link">
       <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
-      <pose>0.19 0.075 -0.201 0 @d90 0</pose>
+      <pose>0.19 0.075 -0.201 0 @d180 0</pose>
       <visual name="camera_tube">
         <geometry>
           <cylinder>
@@ -453,8 +454,8 @@
           <diffuse>0.0 0.0 0.2 1.0</diffuse>
         </material>
       </visual>
-      <sensor name="sim_camera" type="camera">
-        <pose>0 0 @camera_sensor_z 0 0 0</pose>
+      <sensor name="left_sim_camera" type="camera">
+        <pose>0 0 0 0 -@d90 0</pose>
         <camera>
           <horizontal_fov>1.4</horizontal_fov>
           <image>
@@ -472,7 +473,7 @@
         <topic>left_image_raw</topic>
         <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
              This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>camera_sensor</gz_frame_id>
+        <gz_frame_id>left_camera_link</gz_frame_id>
       </sensor>
       <inertial>
         <mass>@camera_mass</mass>
@@ -496,7 +497,7 @@
     <!-- Right Camera link -->
     <link name="right_camera_link">
       <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
-      <pose>0.19 -0.075 -0.201 0 @d90 0</pose>
+      <pose>0.19 -0.075 -0.201 0 @d180 0</pose>
       <visual name="camera_tube">
         <geometry>
           <cylinder>
@@ -509,8 +510,8 @@
           <diffuse>0.0 0.0 0.2 1.0</diffuse>
         </material>
       </visual>
-      <sensor name="sim_camera" type="camera">
-        <pose>0 0 @camera_sensor_z 0 0 0</pose>
+      <sensor name="right_sim_camera" type="camera">
+        <pose>0 0 0 0 -@d90 0</pose>
         <camera>
           <horizontal_fov>1.4</horizontal_fov>
           <image>
@@ -528,7 +529,7 @@
         <topic>right_image_raw</topic>
         <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
              This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>camera_sensor</gz_frame_id>
+        <gz_frame_id>right_camera_link</gz_frame_id>
       </sensor>
       <inertial>
         <mass>@camera_mass</mass>

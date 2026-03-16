@@ -1,0 +1,26 @@
+image_width: 1600
+image_height: 1200
+camera_name: right_sim_camera
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [777.83018415,   0.   , 800.5  ,
+           0.   , 777.83018415, 600.5  ,
+           0.   ,   0.   ,   1.   ]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0., 0., 0., 0., 0.]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1., 0., 0.,
+         0., 1., 0.,
+         0., 0., 1.]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [777.83018415,   0.   , 800.5  ,   -116.67  ,
+           0.   , 777.83018415, 600.5  ,   0.   ,
+           0.   ,   0.   ,   1.   ,   0.   ]

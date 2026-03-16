@@ -41,7 +41,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'orb',
-            default_value='True',
+            default_value='False',
             description='Launch ORB_SLAM3?',
         ),
 

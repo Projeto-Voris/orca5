@@ -16,6 +16,7 @@ endif()
 install(
   PROGRAMS  # PROGRAMS sets execute bits, FILES clears them
   scripts/slam_bridge.py
+  scripts/orbslam_bridge.py
   scripts/camera_info_publisher.py
   scripts/pose_to_path.py
   DESTINATION lib/${PROJECT_NAME})
