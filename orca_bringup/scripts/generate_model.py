@@ -87,7 +87,7 @@ collision_z = displaced_mass / (visual_x * visual_y * fluid_density)
 print(f'total_mass = {total_mass :.4f}, displaced_mass = {displaced_mass :.4f}, collision_z = {collision_z :.4f}')
 
 # The center of mass is just above the origin
-mass_z = 0.011
+mass_z = 0.0113
 
 # The center of volume is directly above the center of mass, resulting in a restoring force
 volume_z = 0.06

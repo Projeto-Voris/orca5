@@ -8,7 +8,7 @@
   <license>MIT</license>
 
   <depend>nav_msgs</depend>
-  <depend>orb_slam3_msgs</depend>
+  <depend>orbslam3_ros2</depend>
   <depend>orca_msgs</depend>
   <depend>rclpy</depend>
   <depend>sensor_msgs</depend>

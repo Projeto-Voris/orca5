@@ -30,7 +30,19 @@ RUN apt-get update \
     sudo \
     wget \
     vim \
-  && rm -rf /var/lib/apt/lists/*
+    libjpeg-dev \ 
+    libpng-dev \ 
+    catch2 \
+    libavcodec-dev \
+    libavutil-dev \
+    libavformat-dev \
+    libswscale-dev \
+    libavdevice-dev \
+    libc++-dev \
+    libepoxy-dev \
+    libglew-dev \
+    libeigen3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # Create a non-root user
 # Required for ardupilot install, but generally a good idea
@@ -41,11 +53,31 @@ RUN groupadd --gid $USER_GID $USERNAME \
   && echo "\n# Added by orca5 Dockerfile:" >> /home/$USERNAME/.bashrc \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USERNAME/.bashrc
 
+USER root
+WORKDIR /tmp/
+RUN git clone --recursive -b v0.9.2 https://github.com/stevenlovegrove/Pangolin.git && \
+    cd Pangolin && \
+    # apt update && \
+    # ./scripts/install_prerequisites.sh recommended && \
+    mkdir build && \
+    cd build && \
+    cmake .. -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf build
 # Switch to our new user
 USER $USERNAME
 
 # install-prereqs-ubuntu.sh looks at $USER
 ENV USER=$USERNAME
+
+WORKDIR /home/$USERNAME
+RUN git clone https://github.com/Projeto-Voris/ORB-SLAM3.git ORB_SLAM3 
+
+WORKDIR /home/$USER/ORB_SLAM3
+RUN chmod +x build.sh &&\
+    ./build.sh
 
 # Create colcon workspace and the mount point for orca5
 WORKDIR /home/$USERNAME
@@ -138,9 +170,9 @@ USER $USERNAME
 
 # Clone ArduSub code
 WORKDIR /home/$USERNAME
-RUN git clone https://github.com/clydemcqueen/ardupilot.git --recurse-submodules \
-  && cd ardupilot \
-  && git checkout 9eb5dc4
+RUN git clone https://github.com/ArduPilot/ardupilot.git --recurse-submodules 
+  # && cd ardupilot \
+  # && git checkout 9eb5dc4
 
 # Install ArduSub prereqs (this also appends to .bashrc)
 WORKDIR /home/$USERNAME/ardupilot
@@ -162,7 +194,25 @@ ENV GZ_VERSION=harmonic
 WORKDIR /home/$USERNAME/colcon_ws/src
 COPY --chown=$USER_UID:$USER_GID sim.repos orca5
 RUN vcs import --recursive < orca5/sim.repos
+RUN tar -xf orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt.tar.gz -C src/orbslam3_ros2/orbslam3_ros2/vocabulary
 
+
+USER root
+RUN apt-get update \
+  && apt-get -y --quiet --no-install-recommends install \
+    libgstreamer1.0-dev \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+    gstreamer1.0-plugins-ugly \
+    gstreamer1.0-libav \
+    gstreamer1.0-tools \
+    gstreamer1.0-x \
+    libgstreamer-plugins-base1.0-dev \
+    libunwind-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+USER $USERNAME
 # Run rosdep over sim repos
 WORKDIR /home/$USERNAME/colcon_ws
 RUN sudo apt-get update \
@@ -171,6 +221,10 @@ RUN sudo apt-get update \
 
 # Build everything so far
 WORKDIR /home/$USERNAME/colcon_ws
+RUN [ "/bin/bash" , "-c" , "\
+  source /opt/ros/jazzy/setup.bash \
+  && colcon build --packages-select orbslam3_ros2 --symlink-install" ]
+
 RUN [ "/bin/bash" , "-c" , "\
   source /opt/ros/jazzy/setup.bash \
   && colcon build --event-handlers console_direct+" ]
@@ -194,7 +248,7 @@ USER root
 # Install gscam2 prereqs
 RUN apt-get update \
   && apt-get -y --quiet --no-install-recommends install \
-    libgstreamer1.0-0 \
+    libgstreamer1.0-dev \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
     gstreamer1.0-plugins-bad \
@@ -202,6 +256,8 @@ RUN apt-get update \
     gstreamer1.0-libav \
     gstreamer1.0-tools \
     gstreamer1.0-x \
+    libgstreamer-plugins-base1.0-dev \
+    libunwind-dev \
   && rm -rf /var/lib/apt/lists/*
 
 # Switch back to new user
