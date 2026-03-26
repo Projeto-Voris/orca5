@@ -36,8 +36,6 @@ def stamp_to_time(stamp: builtin_interfaces.msg.Time) -> rclpy.time.Time:
     return rclpy.time.Time(seconds=stamp.sec, nanoseconds=stamp.nanosec)
 
 class StereoSlamBridge(rclpy.node.Node):
-    """Monocular SLAM bridge"""
-
     # MAVLink connection parameters
     SOURCE_SYSTEM = 200
     SOURCE_COMPONENT = apm.MAV_COMP_ID_VISUAL_INERTIAL_ODOMETRY
@@ -68,7 +66,6 @@ class StereoSlamBridge(rclpy.node.Node):
         self.sub = sub.Sub()
 
         # SLAM state
-        # map_id vinha antes do orbslam_msg precisa mudar 
         self.maps = slam.SlamMaps()
         self.tracking = False
 
@@ -112,6 +109,13 @@ class StereoSlamBridge(rclpy.node.Node):
         self.publish_static_transforms()
 
         self.get_logger().info('ORBSLAM bridge ready')
+
+        # Declarar parametros para tf
+        self.declare_parameter('child_frame_id', 'left_camera_link')
+        self.declare_parameter('parent_frame_id', 'base_link')
+
+        self.camera_frame = self.get_parameter('child_frame_id').value
+        self.base_frame = self.get_parameter('parent_frame_id').value
 
     def publish_static_transforms(self):
         """Publish static transforms. Call this once."""
@@ -180,9 +184,24 @@ class StereoSlamBridge(rclpy.node.Node):
             bridge_status_msg.scale = self.maps.current_map.scale
         self.bridge_status_pub.publish(bridge_status_msg)
 
-    def pose_callback(self, msg):
+    def pose_callback(self, msg: geometry_msgs.msg.PoseStamped):
         self.receive_pose = True
 
+        # Transforma a pose do base link em relação ao mapa para pose da camera em relação ao mapa 
+        # transforma um "Transform" do ROS em um objeto "Pose" ajustado para o formato quartenion
+        t_slam_base = geometry.Pose.from_pose_msg(msg.pose)
+
+        # pega a transformada da camera em relçao ao base link
+        t_base_camera = self.tf_buffer.lookup_transform(self.camera_frame, self.base_frame, rclpy.time.Time())
+        # multiplica as tfs para obter a pose da camera em relação ao mundo em quartenion
+        t_base_camera = geometry.Pose.from_transform_msg(t_base_camera.transform)
+        # multiplica as tfs para obter a pose da camera em relação ao mundo em quartenion
+        t_slam_camera = t_slam_base.mult(t_base_camera)
+        
+        # "Transformação da pose da camera em relação ao mapa do slam (world)"
+        self.t_world_camera = t_slam_camera.mult(self.t_slam_world)
+
+        # Pose: map --> base_link
         self.msg_pose = msg.pose
         self.update = msg
 
@@ -246,23 +265,24 @@ class StereoSlamBridge(rclpy.node.Node):
                 # Start sending VPD messages. Tell the EKF to use them
                 self.set_ekf_sources(slam_tracking=True)
 
-            self.maps.update(msg, self.msg_pose, self.pcl, self.sub, self.get_logger())
+
+            self.maps.update(msg, self.t_world_camera, self.pcl, self.sub, self.get_logger())
 
             #----------
-            # We have t_world_camera, use this to find map -> base.
+            # We have t_map_camera, use this to find map -> base.
             # This will give us 2 map -> base transforms: one from the EKF, one from the SLAM map
             #----------
 
-            # We are given the pose of the camera sensor in the world frame
-            t_world_camera = geometry.Pose.from_pose_msg(self.msg_pose)
+            # Encontrar a pose do base link em relação ao mapa do slam (world)
+            # t_slam_base = geometry.Pose.from_pose_msg(self.msg_pose)
 
             # Apply the current SLAM scale
-            t_world_camera.apply_scale(self.maps.current_map.scale)
+            self.t_world_camera.apply_scale(self.maps.current_map.scale)
 
             # Find the pose of the camera sensor in the SLAM map frame
-            t_slam_camera = self.t_slam_world.mult(t_world_camera)
+            t_slam_camera = self.t_slam_world.mult(self.t_world_camera)
 
-            # Find the pose of left_camera_link (ENU) in the SLAM map frame
+            # Find the pose of camera_link (ENU) in the SLAM map frame
             t_slam_link = t_slam_camera.mult(geometry.Pose.T_OPENCV_FLU)
 
             # Find the pose of the base link (the ROV) in the SLAM map frame

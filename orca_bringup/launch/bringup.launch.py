@@ -76,24 +76,6 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'parent_frame_id',
-            default_value='base_link',
-            description='Parent link of SLAM frame'
-        ),
-
-        DeclareLaunchArgument(
-            'child_frame_id',
-            default_value='left_camera_link',
-            description='link of SLAM frame'
-        ),
-
-        DeclareLaunchArgument(
-            'frame_id',
-            default_value='map',
-            description='PointCloud SLAM link'
-        ),
-
-        DeclareLaunchArgument(
             'yaml_file',
             default_value='stereosim.yaml',
             description='Name of the ORB_SLAM3 YAML configuration file'
@@ -121,27 +103,18 @@ def generate_launch_description():
                 'rescale': LaunchConfiguration('rescale'),
                 'do_rectify': True,
                 'ENU_publish': True,
-                'parent_frame_id': LaunchConfiguration('parent_frame_id'),
-                'child_frame_id': LaunchConfiguration('child_frame_id'),
-                'frame_id': LaunchConfiguration('frame_id'),
+                'parent_frame_id': 'base_link',
+                'child_frame_id': 'left_camera_link',
+                # frame do world que vem do slam
+                'frame_id': 'world',
                 'tracked_points': LaunchConfiguration('tracked_points')
             }],
             remappings=[
                 ('camera/left', LaunchConfiguration('left_image')),
                 ('camera/right', LaunchConfiguration('right_image')),
-                # ('/camera_pose/scaled', LaunchConfiguration('pose'))
             ],
             condition=IfCondition(LaunchConfiguration('orb')),
         ),
-        # ExecuteProcess(
-        #     cmd=['/opt/ros/jazzy/lib/tf2_ros/static_transform_publisher',
-        #             # '--yaw', '-1.570796327',
-        #             # '--roll', '-1.5707963270',
-        #             # '--pitch', '0',
-        #             '--frame-id', 'map',
-        #             '--child-frame-id', 'slam'],
-        #     output='screen',
-        # ),
 
         Node(
             package='orca_bridge',

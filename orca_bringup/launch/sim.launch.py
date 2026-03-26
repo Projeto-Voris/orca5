@@ -108,6 +108,49 @@ def generate_launch_description():
             }],
         ),
 
+        # Publish the static map -> base_link
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            parameters=[{
+                'use_sim_time': True,
+            }],
+            arguments=[
+                '--z', '-0.2',
+                '--frame-id', 'map',
+                '--child-frame-id', 'base_link',
+            ],
+        ),    
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            parameters=[{
+                'use_sim_time': True,
+            }],
+            arguments=[
+                '--roll', str(-math.pi/ 2),
+                '--yaw', str(-math.pi/ 2),
+                '--frame-id', 'map',
+                '--child-frame-id', 'slam',
+            ],
+        ),
+
+        # Publica o estático slam --> world
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            parameters=[{
+                'use_sim_time': True,
+            }],
+            arguments=[
+                '--roll', str(math.pi),
+                '--frame-id', 'slam',
+                '--child-frame-id', 'world',
+            ],
+        ),
+
+
         # Publish the static base_link -> left_camera_link transform.
         # This must match the transform in orca5/model.sdf (see camera_* vars in generate_model.py)
         Node(
@@ -118,11 +161,11 @@ def generate_launch_description():
             }],
             arguments=[
                 '--x', '0.19',
-                '--y', '0.075',
+                '--y', '0.1',
                 '--z', '-0.201',
-                '--roll', '0',
-                '--pitch', str(math.pi / 2),
-                '--yaw', '0',
+                '--roll', str(-math.pi),
+                '--pitch', '0',
+                '--yaw', str(-math.pi / 2),
                 '--frame-id', 'base_link',
                 '--child-frame-id', 'left_camera_link',
             ],
@@ -138,11 +181,11 @@ def generate_launch_description():
             }],
             arguments=[
                 '--x', '0.19',
-                '--y', '-0.075',
+                '--y', '-0.1',
                 '--z', '-0.201',
-                '--roll', '0',
-                '--pitch', str(math.pi / 2),
-                '--yaw', '0',
+                '--roll', str(-math.pi),
+                '--pitch', '0',
+                '--yaw', str(-math.pi / 2),
                 '--frame-id', 'base_link',
                 '--child-frame-id', 'right_camera_link',
             ],

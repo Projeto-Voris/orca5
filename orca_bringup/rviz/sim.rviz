@@ -137,13 +137,15 @@ Visualization Manager:
       Show Names: true
       Tree:
         map:
+          base_link:
+            left_camera_link:
+            right_camera_link:
+              left_camera_sensor:
+              right_camera_sensor:
+                {}
           slam:
-            base_link:
-              left_camera_link:
-              right_camera_link:  
-                left_camera_sensor:
-                right_camera_sendor:
-                  {}
+            world:
+              {}
       Update Interval: 0
       Value: true
     - Angle Tolerance: 0.10000000149011612

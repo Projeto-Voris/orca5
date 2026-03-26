@@ -29,12 +29,12 @@ def rf_distance(msg_pose: geometry_msgs.msg.PoseStamped, msg_cloud: sensor_msgs.
         max_tan_theta_sq = math.tan(math.radians(half_beam_angle_d)) ** 2
         min_points = 15
 
-        # Get the pose of the world in the camera frame
-        t_camera_world = geometry.Pose.from_pose_msg(msg_pose).inverse()
+        # Get the pose of the map in the camera frame
+        t_camera_world = msg_pose.inverse()
 
         z_values = []
         for p in point_cloud2.read_points(msg_cloud, field_names=["x", "y", "z"], skip_nans=True):
-            # Move the tracked points from the world frame to the camera frame
+            # Move the tracked points from the map frame to the camera frame
             point_f_world = geometry.Pose()
             point_f_world.set_position(*p)
             point_f_camera = t_camera_world.mult(point_f_world)
