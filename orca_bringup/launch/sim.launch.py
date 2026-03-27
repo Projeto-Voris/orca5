@@ -12,7 +12,8 @@ from launch import LaunchDescription
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, Command
+from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.actions import Node
 
 
@@ -39,13 +40,13 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'bridge',
-            default_value='True',
+            default_value='False',
             description='Launch SLAM bridge?',
         ),
 
         DeclareLaunchArgument(
             'orb',
-            default_value='True',
+            default_value='False',
             description='Launch ORB_SLAM3?',
         ),
 
@@ -63,7 +64,7 @@ def generate_launch_description():
 
         # Launch Gazebo
         ExecuteProcess(
-            cmd=['gz', 'sim', '-v', '3', '-r', os.path.join(orca_bringup_dir, 'worlds', 'pnw.world')],
+            cmd=['gz', 'sim', '-v', '3', '-r', os.path.join(orca_bringup_dir, 'worlds', 'inpetu.world')],
             output='screen',
         ),
 
@@ -121,7 +122,19 @@ def generate_launch_description():
                 '--child-frame-id', 'base_link',
             ],
         ),    
-
+        # Publish the static map -> slam
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            parameters=[{
+                'use_sim_time': True,
+            }],
+            arguments=[
+                '--pitch', str(math.pi/ 2),
+                '--frame-id', 'map',
+                '--child-frame-id', 'slam',
+            ],
+        ),
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
@@ -132,27 +145,10 @@ def generate_launch_description():
                 '--roll', str(-math.pi/ 2),
                 '--yaw', str(-math.pi/ 2),
                 '--frame-id', 'map',
-                '--child-frame-id', 'slam',
+                '--child-frame-id', 'orbslam3',
             ],
         ),
-
-        # Publica o estático slam --> world
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            parameters=[{
-                'use_sim_time': True,
-            }],
-            arguments=[
-                '--roll', str(math.pi),
-                '--frame-id', 'slam',
-                '--child-frame-id', 'world',
-            ],
-        ),
-
-
-        # Publish the static base_link -> left_camera_link transform.
-        # This must match the transform in orca5/model.sdf (see camera_* vars in generate_model.py)
+                # Publish the static base_link -> left_camera_link transform.
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
@@ -162,7 +158,11 @@ def generate_launch_description():
             arguments=[
                 '--x', '0.19',
                 '--y', '0.1',
+                '--y', '0.1',
                 '--z', '-0.201',
+                '--roll', str(-math.pi),
+                '--pitch', '0',
+                '--yaw', str(-math.pi / 2),
                 '--roll', str(-math.pi),
                 '--pitch', '0',
                 '--yaw', str(-math.pi / 2),
@@ -241,11 +241,14 @@ def generate_launch_description():
         # vectored_6dof as the model, AND the default params must set magic ArduSub parameter FRAME_CONFIG to 2.0.
         # Yaw is provided by Gazebo, so the start yaw value is ignored.
         ExecuteProcess(
-            cmd=['/home/biancarosa/ardupilot/build/sitl/bin/ardusub', '-S', '--wipe', '-M', 'JSON', '-I0', '--home', '47.6302,-122.3982391,-0.1,0',
+            cmd=['/home/daniel/ardupilot/build/sitl/bin/ardusub', '-S', '--wipe', '-M', 'JSON', '-I0', '--home', '-27.4302290,-48.443398,-0.1,0',
                  '--defaults', sub_vpe_parm_files if LaunchConfiguration('use_vpe') else sub_vpd_parm_files],
             output='screen',
             condition=IfCondition(LaunchConfiguration('ardusub')),
         ),
+
     ]
+
+    # teste
 
     return LaunchDescription(nodes)

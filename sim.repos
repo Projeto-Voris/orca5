@@ -4,4 +4,19 @@ repositories:
   ardupilot_gazebo:
     type: git
     url: https://github.com/ArduPilot/ardupilot_gazebo.git
-    version: 3791592
+    version: 65937b7
+
+  voris_description:
+    type: git
+    url: https://github.com/Projeto-Voris/voris_description.git
+    version: 364b693
+
+  voris_log:
+    type: git
+    url: https://github.com/Projeto-Voris/voris_log.git
+    version: 33189cd
+  
+  voris_control:
+    type: git
+    url: https://github.com/Projeto-Voris/voris_control.git
+    version: ab82f77

@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <asset>
+    <contributor>
+      <author>Blender User</author>
+      <authoring_tool>Blender 4.1.1 commit date:2024-04-15, commit time:15:11, hash:e1743a0317bc</authoring_tool>
+    </contributor>
+    <created>2024-07-05T10:32:37</created>
+    <modified>2024-07-05T10:32:37</modified>
+    <unit name="meter" meter="1"/>
+    <up_axis>Z_UP</up_axis>
+  </asset>
+  <library_cameras>
+    <camera id="Camera-camera" name="Camera">
+      <optics>
+        <technique_common>
+          <perspective>
+            <xfov sid="xfov">39.59775</xfov>
+            <aspect_ratio>1.777778</aspect_ratio>
+            <znear sid="znear">0.1</znear>
+            <zfar sid="zfar">100</zfar>
+          </perspective>
+        </technique_common>
+      </optics>
+      <extra>
+        <technique profile="blender">
+          <shiftx sid="shiftx" type="float">0</shiftx>
+          <shifty sid="shifty" type="float">0</shifty>
+          <dof_distance sid="dof_distance" type="float">10</dof_distance>
+        </technique>
+      </extra>
+    </camera>
+  </library_cameras>
+  <library_lights>
+    <light id="Light-light" name="Light">
+      <technique_common>
+        <point>
+          <color sid="color">1000 1000 1000</color>
+          <constant_attenuation>1</constant_attenuation>
+          <linear_attenuation>0</linear_attenuation>
+          <quadratic_attenuation>0</quadratic_attenuation>
+        </point>
+      </technique_common>
+      <extra>
+        <technique profile="blender">
+          <type sid="type" type="int">0</type>
+          <flag sid="flag" type="int">0</flag>
+          <mode sid="mode" type="int">2097153</mode>
+          <red sid="red" type="float">1</red>
+          <green sid="green" type="float">1</green>
+          <blue sid="blue" type="float">1</blue>
+          <shadow_r sid="blender_shadow_r" type="float">0</shadow_r>
+          <shadow_g sid="blender_shadow_g" type="float">0</shadow_g>
+          <shadow_b sid="blender_shadow_b" type="float">0</shadow_b>
+          <energy sid="blender_energy" type="float">1000</energy>
+          <spotsize sid="spotsize" type="float">75</spotsize>
+          <spotblend sid="spotblend" type="float">0.15</spotblend>
+          <clipsta sid="clipsta" type="float">0.04999995</clipsta>
+          <clipend sid="clipend" type="float">30.002</clipend>
+          <bias sid="bias" type="float">1</bias>
+          <radius sid="radius" type="float">0.1</radius>
+          <area_shape sid="area_shape" type="int">1</area_shape>
+          <area_size sid="area_size" type="float">0.1</area_size>
+          <area_sizey sid="area_sizey" type="float">0.1</area_sizey>
+          <area_sizez sid="area_sizez" type="float">1</area_sizez>
+        </technique>
+      </extra>
+    </light>
+  </library_lights>
+  <library_effects>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <newparam sid="_02_RV_CONCRETE_TEXTURE_jpg-surface">
+          <surface type="2D">
+            <init_from>_02_RV_CONCRETE_TEXTURE_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="_02_RV_CONCRETE_TEXTURE_jpg-sampler">
+          <sampler2D>
+            <source>_02_RV_CONCRETE_TEXTURE_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="_02_RV_CONCRETE_TEXTURE_jpg-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+  </library_effects>
+  <library_images>
+    <image id="_02_RV_CONCRETE_TEXTURE_jpg" name="_02_RV_CONCRETE_TEXTURE_jpg">
+      <init_from>002_RV_CONCRETE_TEXTURE.jpg</init_from>
+    </image>
+  </library_images>
+  <library_materials>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
+    </material>
+  </library_materials>
+  <library_geometries>
+    <geometry id="Piscina_metros-mesh" name="Piscina metros">
+      <mesh>
+        <source id="Piscina_metros-mesh-positions">
+          <float_array id="Piscina_metros-mesh-positions-array" count="48">-1.8 0.2 -2.8 1.8 0.2 -2.8 -1.8 6.1 -2.8 1.8 6.1 -2.8 -1.8 0.2 2.8 -1.8 6.1 2.8 1.8 0.2 2.8 1.8 6.1 2.8 -2 6.1 3 2 6.1 3 2 6.1 -3 -2 6.1 -3 -2 0 -3 -2 0 3 2 0 -3 2 0 3</float_array>
+          <technique_common>
+            <accessor source="#Piscina_metros-mesh-positions-array" count="16" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Piscina_metros-mesh-normals">
+          <float_array id="Piscina_metros-mesh-normals-array" count="48">0.5773718 0.5773395 0.5773395 -0.5773491 0.5773535 0.5773482 0.3015165 0.9045313 0.3015149 -0.3015315 0.9045255 0.3015168 0.5773491 0.5773535 -0.5773482 0.3015315 0.904527 -0.3015123 -0.5773718 0.5773395 -0.5773395 -0.3015167 0.9045302 -0.3015173 -0.5773395 0.5773639 0.5773473 0.5773614 0.5773615 0.577328 0.5773388 0.5773684 -0.5773438 -0.5773627 0.5773575 -0.5773307 -0.5773456 -0.5773535 -0.5773519 -0.5773721 -0.5773394 0.5773394 0.5773721 -0.5773394 -0.5773394 0.5773456 -0.5773535 0.5773519</float_array>
+          <technique_common>
+            <accessor source="#Piscina_metros-mesh-normals-array" count="16" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Piscina_metros-mesh-map-0">
+          <float_array id="Piscina_metros-mesh-map-0-array" count="168">0.2549527 0.7181512 0.4689313 0.7181512 0.2549527 0.9693532 0.2549527 0.9693532 0.4689313 0.7181512 0.4689313 0.9693532 0.2569349 0.3738298 0.2569348 0.7066855 0.005732893 0.3738298 0.005732893 0.3738298 0.2569348 0.7066855 0.005732834 0.7066855 0.7802885 0.3738298 0.9942671 0.3738298 0.7802885 0.6250318 0.7802885 0.6250318 0.9942671 0.3738298 0.9942671 0.6250318 0.2684007 0.7066854 0.2684007 0.3738298 0.5196027 0.7066854 0.5196027 0.7066854 0.2684007 0.3738298 0.5196027 0.3738298 0.5310686 0.6450129 0.7688227 0.6450129 0.756935 0.6535282 0.756935 0.6535282 0.7688227 0.6450129 0.7688226 0.9004726 0.756935 0.6535282 0.7688226 0.9004726 0.7569349 0.8919574 0.7569349 0.8919574 0.7688226 0.9004726 0.5310686 0.9004726 0.7569349 0.8919574 0.5310686 0.9004726 0.5429562 0.8919574 0.5429562 0.8919574 0.5310686 0.9004726 0.5310686 0.6450129 0.5429562 0.8919574 0.5310686 0.6450129 0.5429562 0.6535282 0.5429562 0.6535282 0.5310686 0.6450129 0.756935 0.6535282 0.5366334 0.005732893 0.5366334 0.362364 0.276916 0.005732893 0.276916 0.005732893 0.5366334 0.362364 0.2769161 0.362364 0.5480992 0.005732893 0.7858532 0.005732893 0.5480992 0.2654502 0.5480992 0.2654502 0.7858532 0.005732893 0.7858532 0.2654502 0.2654502 0.005732953 0.2654502 0.3623641 0.005732834 0.005732893 0.005732834 0.005732893 0.2654502 0.3623641 0.005732834 0.3623639 0.5310686 0.3738298 0.7688227 0.3738299 0.5310685 0.6335472 0.5310685 0.6335472 0.7688227 0.3738299 0.7688226 0.6335472 0.7802885 0.8749265 0.7802885 0.6364976 0.9942671 0.8749265 0.9942671 0.8749265 0.7802885 0.6364976 0.9942671 0.6364976 0.243487 0.7181513 0.243487 0.973611 0.005732953 0.7181513 0.005732953 0.7181513 0.243487 0.973611 0.005732893 0.9736109</float_array>
+          <technique_common>
+            <accessor source="#Piscina_metros-mesh-map-0-array" count="84" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Piscina_metros-mesh-vertices">
+          <input semantic="POSITION" source="#Piscina_metros-mesh-positions"/>
+        </vertices>
+        <triangles material="Material-material" count="28">
+          <input semantic="VERTEX" source="#Piscina_metros-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Piscina_metros-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Piscina_metros-mesh-map-0" offset="2" set="0"/>
+          <p>0 0 0 1 1 1 2 2 2 2 2 3 1 1 4 3 3 5 4 4 6 0 0 7 5 5 8 5 5 9 0 0 10 2 2 11 6 6 12 4 4 13 7 7 14 7 7 15 4 4 16 5 5 17 1 1 18 6 6 19 3 3 20 3 3 21 6 6 22 7 7 23 8 8 24 9 9 25 7 7 26 7 7 27 9 9 28 10 10 29 7 7 30 10 10 31 3 3 32 3 3 33 10 10 34 11 11 35 3 3 36 11 11 37 2 2 38 2 2 39 11 11 40 8 8 41 2 2 42 8 8 43 5 5 44 5 5 45 8 8 46 7 7 47 12 12 48 13 13 49 11 11 50 11 11 51 13 13 52 8 8 53 14 14 54 12 12 55 10 10 56 10 10 57 12 12 58 11 11 59 15 15 60 14 14 61 9 9 62 9 9 63 14 14 64 10 10 65 13 13 66 15 15 67 8 8 68 8 8 69 15 15 70 9 9 71 0 0 72 4 4 73 1 1 74 1 1 75 4 4 76 6 6 77 13 13 78 12 12 79 15 15 80 15 15 81 12 12 82 14 14 83</p>
+        </triangles>
+      </mesh>
+    </geometry>
+  </library_geometries>
+  <library_visual_scenes>
+    <visual_scene id="Scene" name="Scene">
+      <node id="Piscina_metros" name="Piscina metros" type="NODE">
+        <matrix sid="transform">1 0 0 0 0 -4.37114e-8 -1 0 0 1 -4.37114e-8 0 0 0 0 1</matrix>
+        <instance_geometry url="#Piscina_metros-mesh" name="Piscina metros">
+          <bind_material>
+            <technique_common>
+              <instance_material symbol="Material-material" target="#Material-material">
+                <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+              </instance_material>
+            </technique_common>
+          </bind_material>
+        </instance_geometry>
+      </node>
+      <node id="Camera" name="Camera" type="NODE">
+        <matrix sid="transform">0.6859207 -0.3240135 0.6515582 7.358891 0.7276763 0.3054208 -0.6141704 -6.925791 0 0.8953956 0.4452714 4.958309 0 0 0 1</matrix>
+        <instance_camera url="#Camera-camera"/>
+      </node>
+      <node id="Light" name="Light" type="NODE">
+        <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 4.076245 0.9551712 -0.1998834 0.2183912 1.005454 -0.05518906 0.6045247 0.7946723 5.903862 0 0 0 1</matrix>
+        <instance_light url="#Light-light"/>
+      </node>
+    </visual_scene>
+  </library_visual_scenes>
+  <scene>
+    <instance_visual_scene url="#Scene"/>
+  </scene>
+</COLLADA>

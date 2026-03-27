@@ -31,23 +31,8 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'vocabulary',
-            default_value=PathJoinSubstitution([
-                FindPackageShare('orbslam3_ros2'),
-                'vocabulary',  # Assuming your vocab file is in the vocabulary directory
-                'ORBvoc.txt'   # Replace with your actual vocabulary file name
-            ]),
-            description='Path to the ORB_SLAM3 vocabulary file'
-        ),
-        DeclareLaunchArgument(
-            'pangolin',
-            default_value="False",
-            description='Use the viewer'
-        ),
-
-        DeclareLaunchArgument(
             'bridge',
-            default_value='True',
+            default_value='False',
             description='Launch SLAM bridge?',
         ),
 
@@ -76,16 +61,28 @@ def generate_launch_description():
         ),
 
         DeclareLaunchArgument(
-            'yaml_file',
-            default_value='stereosim.yaml',
-            description='Name of the ORB_SLAM3 YAML configuration file'
+            'parent_frame_id',
+            default_value='base_link',
+            description='Parent link of SLAM frame'
+        ),
+
+        DeclareLaunchArgument(
+            'child_frame_id',
+            default_value='left_camera_link',
+            description='link of SLAM frame'
+        ),
+
+        DeclareLaunchArgument(
+            'frame_id',
+            default_value='slam',
+            description='PointCloud SLAM link'
         ),
 
         DeclareLaunchArgument('left_image', default_value=['/left_image_raw'], description='stereo left image'),
         DeclareLaunchArgument('right_image', default_value=['/right_image_raw'], description='stereo right image'),
-        DeclareLaunchArgument('voc_file', default_value='/home/biancarosa/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt', 
+        DeclareLaunchArgument('voc_file', default_value='/home/orca5/colcon_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt', 
                   description='Caminho para o vocabulário ORB'),
-        DeclareLaunchArgument('settings_file', default_value='/home/biancarosa/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/config/stereosim.yaml', 
+        DeclareLaunchArgument('settings_file', default_value='/home/orca5/colcon_ws/src/orca5/orca_bringup/config/stereo_sim.yaml', 
                   description='Caminho para o settings .yaml'),
         DeclareLaunchArgument('tracked_points', default_value='True', description='Publish tracked points?'),
         DeclareLaunchArgument('pose', default_value='/camera_pose', description='Pose topic name'),
@@ -101,13 +98,13 @@ def generate_launch_description():
                 'voc_file': LaunchConfiguration('voc_file'),
                 'settings_file': LaunchConfiguration('settings_file'),
                 'rescale': LaunchConfiguration('rescale'),
-                'do_rectify': True,
+                'do_rectify': False,
                 'ENU_publish': True,
-                'parent_frame_id': 'base_link',
-                'child_frame_id': 'left_camera_link',
-                # frame do world que vem do slam
-                'frame_id': 'world',
-                'tracked_points': LaunchConfiguration('tracked_points')
+                'parent_frame_id': LaunchConfiguration('parent_frame_id'),
+                'child_frame_id': LaunchConfiguration('child_frame_id'),
+                'frame_id': LaunchConfiguration('frame_id'),
+                'tracked_points': LaunchConfiguration('tracked_points'),
+                'use_sim_time': True,
             }],
             remappings=[
                 ('camera/left', LaunchConfiguration('left_image')),
@@ -127,6 +124,7 @@ def generate_launch_description():
             }],
             condition=IfCondition(LaunchConfiguration('bridge')),
         ),
+
     ]
 
     return LaunchDescription(nodes)
