@@ -158,7 +158,11 @@ def generate_launch_description():
             arguments=[
                 '--x', '0.19',
                 '--y', '0.1',
+                '--y', '0.1',
                 '--z', '-0.201',
+                '--roll', str(-math.pi),
+                '--pitch', '0',
+                '--yaw', str(-math.pi / 2),
                 '--roll', str(-math.pi),
                 '--pitch', '0',
                 '--yaw', str(-math.pi / 2),

@@ -109,19 +109,9 @@ def generate_launch_description():
             remappings=[
                 ('camera/left', LaunchConfiguration('left_image')),
                 ('camera/right', LaunchConfiguration('right_image')),
-                # ('/camera_pose/scaled', LaunchConfiguration('pose'))
             ],
             condition=IfCondition(LaunchConfiguration('orb')),
         ),
-        # ExecuteProcess(
-        #     cmd=['/opt/ros/jazzy/lib/tf2_ros/static_transform_publisher',
-        #             # '--yaw', '-1.570796327',
-        #             # '--roll', '-1.5707963270',
-        #             # '--pitch', '0',
-        #             '--frame-id', 'map',
-        #             '--child-frame-id', 'slam'],
-        #     output='screen',
-        # ),
 
         Node(
             package='orca_bridge',
