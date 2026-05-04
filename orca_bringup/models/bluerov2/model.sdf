@@ -590,7 +590,7 @@
     <link name="right_camera_link">
       <!-- <pose>0.19 0.1 -0.201 0 1.5707963267948966 0</pose> -->
       <pose>0.19 -0.1 -0.201 -1.5707963267948966 0 -1.5707963267948966</pose>
-      <sensor name="right_sim_camera" type="camera">
+      <sensor name="right_camera" type="camera">
         <pose>0 0 0 0 -1.5707963267948966 1.5707963267948966</pose>
         <camera>
           <horizontal_fov>1.6</horizontal_fov>

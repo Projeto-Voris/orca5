@@ -60,9 +60,9 @@ def generate_launch_description():
 
     return LaunchDescription([
         SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
-        DeclareLaunchArgument('voc_file', default_value='/home/daniel/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt', 
+        DeclareLaunchArgument('voc_file', default_value='/home/shared/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt', 
                   description='Caminho para o vocabulário ORB'),
-        DeclareLaunchArgument('settings_file', default_value='/home/daniel/ros2_ws/src/orca5/orca_bringup/cfg/sim.yaml', 
+        DeclareLaunchArgument('settings_file', default_value='/home/shared/ros2_ws/src/orca5/orca_bringup/cfg/sim.yaml', 
                   description='Caminho para o settings .yaml'),
         DeclareLaunchArgument(
             'base',
