@@ -83,7 +83,7 @@
       <mQabsQ>-4.0</mQabsQ>
       <nRabsR>-4.0</nRabsR>
     </plugin>
-
+http://www.ardusub.com/introduction/features.html
     <link name="thruster1">
       <pose>0.138 -0.098 -0.0137 -1.5707963267948966 1.5707963267948966 -0.7853981633974483</pose>
       <visual name="thruster_prop_visual">
@@ -629,6 +629,81 @@
       <parent>base_link</parent>
       <child>right_camera_link</child>
     </joint>
+
+
+    <!-- Doppler Velocity Log link -->
+    <sensor type="custom" gz:type="dvl" name="meu_dvl">
+  <pose>0 0 0 0 0 0</pose>
+  <gz:dvl>
+
+    <arrangement degrees="true">
+      <beam id="1">
+        <aperture>0</aperture>
+        <rotation>0</rotation>
+        <tilt>30</tilt>
+      </beam>
+
+      <beam id="2">
+        <aperture>0</aperture>
+        <rotation>90</rotation>
+        <tilt>30</tilt>
+      </beam>
+
+      <beam id="3">
+        <aperture>0</aperture>
+        <rotation>180</rotation>
+        <tilt>30</tilt>
+      </beam>
+
+      <beam id="4">
+        <aperture>0</aperture>
+        <rotation>270</rotation>
+        <tilt>30</tilt>
+      </beam>
+      
+    </arrangement>
+    <tracking>
+      <bottom_mode>
+        <when>always</when>
+        <noise type="gaussian">
+          <stddev>0.01</stddev>
+        </noise>
+        <visualize>true</visualize>
+      </bottom_mode>
+      
+      <water_mass_mode>
+        <when>always</when>
+        <water_velocity>
+          <x>0</x>
+          <y>0</y>
+          <z>0</z>
+        </water_velocity>
+        <boundaries>
+          <near>0.2</near>
+          <far>100.0</far>
+        </boundaries>
+        <bins>10</bins>
+        <noise type="gaussian">
+          <stddev>0.02</stddev>
+        </noise>
+        <visualize>true</visualize>
+      </water_mass_mode>
+    </tracking>
+
+    <minimum_range>0.1</minimum_range>
+    <maximum_range>100.0</maximum_range>
+    <resolution>0.01</resolution>
+    <reference_frame>child</reference_frame>
+  </gz:dvl>
+</sensor>
+
+
+    <!-- Attach dvl_link to base_link -->
+    <joint name="dvl_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>dvl_link</child>
+    </joint>
+
 
     <link name='sonar_link'>
       <pose>-0.15 0 -0.095 0 0 0</pose>
