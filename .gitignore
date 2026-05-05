@@ -1,6 +1,8 @@
 .idea/
 __pycache__/
 cmake-build-debug/
-
+*/.venv/
+*/venv/
+*/.vscode/
 # Don't save the generated sdf
 models/orca5/model.sdf
