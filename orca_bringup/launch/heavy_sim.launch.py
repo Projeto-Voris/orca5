@@ -46,7 +46,7 @@ def generate_launch_description():
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub_heavy.parm')
     mavros_params_file = os.path.join(orca_bringup_dir, 'param', 'sim_mavros_params.yaml')
     orca_params_file = os.path.join(orca_bringup_dir, 'param', 'sim_heavy_params.yaml')
-    rviz_file = os.path.join(orca_bringup_dir, 'cfg', 'heavy_sim_launch.rviz')
+    rviz_file = os.path.join(orca_bringup_dir, 'rviz', 'sim_heavy.rviz')
     world_file = os.path.join(orca_description_dir, 'worlds', 'inpetu_heavy.world')
 
     sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'camera_info', 'sim_left.ini')
