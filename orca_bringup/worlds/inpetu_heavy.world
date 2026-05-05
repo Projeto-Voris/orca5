@@ -31,6 +31,12 @@
                 name="gz::sim::systems::Sensors">
             <!--      <render_engine>ogre</render_engine>-->
         </plugin>
+        
+        <!-- DVL Plugin -->
+         <plugin
+            filename="gz-sim-dvl-system"
+            name="gz::sim::systems::DopplerVelocityLogSystem">
+        </plugin>
 
         <!-- IMU plugin manages all IMU sensors -->
         <plugin
