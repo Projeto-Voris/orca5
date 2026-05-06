@@ -28,7 +28,7 @@
         <pose>0 0 0 0 0 @d90</pose>
         <geometry>
           <mesh>
-            <uri>model://bluerov2/meshes/bluerov2_skid.dae</uri>
+            <uri>model://bluerov2/meshes/bluerov2_heavy_skid.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -530,110 +530,161 @@
         param set RNGFND1_MIN_CM 20       # Min distance is 0.5m
         param set RNGFND1_MAX_CM 5000     # Max distance is 50m
         param set RNGFND1_ORIENT 25       # Down
-        param set RNGFND1_POS_X @ping_x
-        param set RNGFND1_POS_Y @ping_y
-        param set RNGFND1_POS_Z @ping_z
+        param set RNGFND1_POS_X @sonar_x
+        param set RNGFND1_POS_Y @sonar_y
+        param set RNGFND1_POS_Z @sonar_z
       -->
-      <sensor>
+      <!-- <sensor>
         <type>sonar</type>
         <index>1</index>
         <topic>sonar_link/sensor/sonar</topic>
-      </sensor>
+      </sensor> -->
 
     </plugin>
 
     <!-- Left Camera link -->
-    <link name="left_camera_link">
-      <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
-      <pose>@camera_x @camera_y @camera_z -@d90 0 -@d90</pose>
-       <sensor name="left_camera" type="camera">
-        <pose>0 0 0 0 -@d90 @d90</pose>
-        <camera>
-          <horizontal_fov>@camera_fov</horizontal_fov>
-          <image>
-            <width>@image_width</width>
-            <height>@image_height</height>
-          </image>
-          <clip>
-            <near>0.2</near>
-            <far>@camera_far_clip</far>
-          </clip>
-        </camera>
-        <always_on>1</always_on>
-        <update_rate>25</update_rate>
-        <visualize>true</visualize>
-        <topic>Passive/left/image_raw</topic>
-        <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
-             This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>left_camera_link</gz_frame_id>
-      </sensor>
-      <inertial>
-        <mass>@camera_mass</mass>
-        <inertia>
-          <ixx>@camera_ixx</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>@camera_iyy</iyy>
-          <iyz>0</iyz>
-          <izz>@camera_izz</izz>
-        </inertia>
-      </inertial>
-    </link>
+    <link name="passive_stereo_link">
+      <pose>@passive_cam_x @passive_cam_y @passive_cam_z 0 0 0</pose>
+        <sensor name="left_camera" type="camera">
+          <pose>0 @p_cam_baseline/2 0 0 0 0 </pose>
+          <camera>
+            <horizontal_fov>@p_cam_fov</horizontal_fov>
+            <image>
+              <width>@p_img_width</width>
+              <height>@p_img_height</height>
+              <format>B8G8R8</format>
+            </image>
+            <distortion>
+              <k1>0.0</k1>
+              <k2>0.0</k2>
+              <k3>0.0</k3>
+              <p1>0.0</p1>
+              <p2>0.0</p2>
+              <center>0.5 0.5</center>
+            </distortion>
+            <noise>
+              <type>gaussian</type>
+              <mean>@p_noise_mean</mean>
+              <stddev>@p_noise_std</stddev>
+            </noise>
+            <clip>
+              <near>0.2</near>
+              <far>@p_cam_far_clip</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>25</update_rate>
+          <visualize>true</visualize>
+          <topic>Passive/left/image_raw</topic>
+          <gz_frame_id>Passive/left_camera_link</gz_frame_id>
+        </sensor>
+        <sensor name="right_camera" type="camera">
+          <pose>0 -@p_cam_baseline/2 0 0 0 0 </pose>
+          <camera>
+            <horizontal_fov>@p_cam_fov</horizontal_fov>
+            <image>
+              <width>@p_img_width</width>
+              <height>@p_img_height</height>
+              <format>B8G8R8</format>
+            </image>
+            <distortion>
+              <k1>0.0</k1>
+              <k2>0.0</k2>
+              <k3>0.0</k3>
+              <p1>0.0</p1>
+              <p2>0.0</p2>
+              <center>0.5 0.5</center>
+            </distortion>
+            <noise>
+              <type>gaussian</type>
+              <mean>@p_noise_mean</mean>
+              <stddev>@p_noise_std</stddev>
+            </noise>
+            <clip>
+              <near>0.2</near>
+              <far>@p_cam_far_clip</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>25</update_rate>
+          <visualize>true</visualize>
+          <topic>Passive/right/image_raw</topic>
+          <gz_frame_id>Passive/right_camera_link</gz_frame_id>
+        </sensor>
+        <inertial>
+          <mass>@passive_cam_mass</mass>
+          <inertia>
+            <ixx>@passive_cam_ixx</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>@passive_cam_iyy</iyy>
+            <iyz>0</iyz>
+            <izz>@passive_cam_izz</izz>
+          </inertia>
+        </inertial>
+      </link>
 
     <!-- Attach camera_link to base_link -->
-    <joint name="left_camera_joint" type="fixed">
+    <joint name="stereo_p_joint" type="fixed">
       <parent>base_link</parent>
-      <child>left_camera_link</child>
-    </joint>
-
-    <!-- Right Camera link -->
-    <link name="right_camera_link">
-      <!-- <pose>@camera_x @camera_y @camera_z 0 @d90 0</pose> -->
-      <pose>@camera_x -@camera_y @camera_z -@d90 0 -@d90</pose>
-      <sensor name="right_sim_camera" type="camera">
-        <pose>0 0 0 0 -@d90 @d90</pose>
-        <camera>
-          <horizontal_fov>@camera_fov</horizontal_fov>
-          <image>
-            <width>@image_width</width>
-            <height>@image_height</height>
-          </image>
-          <clip>
-            <near>0.2</near>
-            <far>@camera_far_clip</far>
-          </clip>
-        </camera>
-        <always_on>1</always_on>
-        <update_rate>25</update_rate>
-        <visualize>true</visualize>
-        <topic>Passive/right/image_raw</topic>
-        <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
-             This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>right_camera_link</gz_frame_id>
-      </sensor>
-      <inertial>
-        <mass>@camera_mass</mass>
-        <inertia>
-          <ixx>@camera_ixx</ixx>
-          <ixy>0</ixy>
-          <ixz>0</ixz>
-          <iyy>@camera_iyy</iyy>
-          <iyz>0</iyz>
-          <izz>@camera_izz</izz>
-        </inertia>
-      </inertial>
-    </link>
-
-    <!-- Attach camera_link to base_link -->
-    <joint name="right_camera_joint" type="fixed">
-      <parent>base_link</parent>
-      <child>right_camera_link</child>
+      <child>passive_stereo_link</child>
     </joint>
 
     <link name='sonar_link'>
-      <pose>@ping_x @ping_y @ping_z 0 0 0</pose>
+      <pose>@sonar_x @sonar_y @sonar_z 0 0 0</pose>
       <inertial>
-        <mass>@ping_mass</mass>
+        <mass>@sonar_mass</mass>
+        <inertia>
+          <ixx>@sonar_ixx</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>@sonar_iyy</iyy>
+          <iyz>0</iyz>
+          <izz>@sonar_izz</izz>
+        </inertia>
+      </inertial>
+      <!-- Use a gpu_lidar sensor to emulate a Ping sonar sensor. The sensor is configured to generate 5x5=25 range
+           values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
+           ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
+      <sensor name="sonar_3d" type="gpu_lidar">
+      <pose>0 0 0 0 0 0</pose>
+      <topic>sonar_3d</topic>
+      <update_rate>@sonar_hz</update_rate>
+      <gz_frame_id>sonar_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>@sonar_h_samples</samples> 
+            <resolution>1</resolution>
+            <min_angle>-@sonar_h_angle</min_angle> 
+            <max_angle>@sonar_h_angle</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>@sonar_v_samples</samples>
+            <resolution>1</resolution>
+            <min_angle>-@sonar_v_angle</min_angle>
+             <max_angle>@sonar_v_angle</max_angle>  
+          </vertical>
+        </scan>
+        <range>
+          <min>0.2</min>  
+          <max>@sonar_max_range</max>   
+          <resolution>@sonar_resolution</resolution> 
+        </range>
+      </lidar>
+    </sensor>
+    </link>
+
+    <joint name='sonar_joint' type='fixed'>
+      <parent>base_link</parent>
+      <child>sonar_link</child>
+    </joint>
+
+
+    <link name='dvl_link'>
+      <pose>@dvl_x @dvl_y @dvl_z 0 0 0</pose>
+      <inertial>
+        <mass>@dvl_mass</mass>
         <inertia>
           <ixx>0.001</ixx>
           <ixy>0</ixy>
@@ -644,65 +695,71 @@
         </inertia>
       </inertial>
 
-      <visual name="ping_visual">
+      <visual name="dvl_visual">
         <geometry>
           <cylinder>
-            <length>@ping_height</length>
-            <radius>@ping_radius</radius>
+            <length>@dvl_height</length>
+            <radius>@dvl_radius</radius>
           </cylinder>
         </geometry>
         <material>
-          <ambient>0.0 0.2 0.0 1.0</ambient>
-          <diffuse>0.0 0.2 0.0 1.0</diffuse>
+          <ambient>0.2 0.0 0.0 1.0</ambient>
+          <diffuse>0.2 0.0 0.0 1.0</diffuse>
         </material>
       </visual>
-
-      <!-- Use a gpu_lidar sensor to emulate a Ping sonar sensor. The sensor is configured to generate 5x5=25 range
-           values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
-           ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
-      <sensor name='ping_sonar' type='gpu_lidar'>
-        <always_on>1</always_on>
-        <update_rate>10</update_rate>
-        <visualize>1</visualize>
-        <topic>sonar_link/sensor/sonar</topic>
-        <pose>0 0 0 0 @d90 0</pose>
-        <ray>
-          <scan>
-            <horizontal>
-              <samples>5</samples>
-              <resolution>1</resolution>
-              <min_angle>-0.14835</min_angle>
-              <max_angle>0.14835</max_angle>
-            </horizontal>
-            <vertical>
-              <samples>5</samples>
-              <resolution>1</resolution>
-              <min_angle>-0.14835</min_angle>
-              <max_angle>0.14835</max_angle>
-            </vertical>
-          </scan>
-          <range>
-            <min>0.2</min>
-            <max>50</max>
-            <resolution>0.02</resolution>
-          </range>
-          <noise>
-            <type>gaussian</type>
-            <mean>0.1</mean>
-            <stddev>0.005</stddev>
-          </noise>
-        </ray>
-      </sensor>
+      <sensor name="A50" type="custom" gz:type="dvl">
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <always_on>1</always_on>
+          <update_rate>5</update_rate>
+          <topic>/model/bluerov2/dvl/velocity</topic>
+          <gz_frame_id>dvl_link</gz_frame_id>
+          <gz:dvl>
+            <type>phased_array</type>
+            <arrangement degrees="true">
+              <beam id="1">
+                <aperture>2</aperture>
+                <rotation>45</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>135</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>-45</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>-135</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+            </arrangement>
+            <tracking>
+              <bottom_mode>
+                <when>best</when>
+                <noise type="gaussian">
+                  <mean>@dvl_noise_mean</mean>
+                  <stddev>@dvl_noise_std</stddev>
+                </noise>
+                <visualize>false</visualize>
+              </bottom_mode>
+            </tracking>
+            <resolution>0.01</resolution>
+            <maximum_range>@dvl_max_range</maximum_range>
+            <minimum_range>0.1</minimum_range>
+            <reference_frame>0 0 0 0 0 0</reference_frame>
+          </gz:dvl>
+        </sensor>      
     </link>
 
-    <joint name='sonar_joint' type='revolute'>
-      <parent>base_link</parent>
-      <child>sonar_link</child>
-      <axis>
-        <xyz>0 0 1</xyz>
-      </axis>
+    <joint name='dvl_joint' type='fixed'>
+      <parent>base_link </parent>
+      <child>dvl_link</child>
     </joint>
-
+    
     <!-- Publish the ground-truth pose for rviz -->
     <plugin
         filename="gz-sim-odometry-publisher-system"

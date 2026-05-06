@@ -5,21 +5,22 @@
 
     <!-- BlueROV2 thruster reference: http://www.ardusub.com/introduction/features.html -->
     <!-- fluid_density: 1000 -->
-    <!-- total_mass: 17.348999999999997 -->
-    <!-- displaced_mass: 17.398999999999997 -->
+    <!-- total_mass: 10.487 -->
+    <!-- displaced_mass: 10.537 -->
 
+    <!-- incluir camera da direita  -->
 
     <link name="base_link">
       <inertial>
         <pose>0 0 0.0113 0 0 0</pose>
-        <mass>17</mass>
+        <mass>10</mass>
         <inertia>
-          <ixx>0.1835114999660365</ixx>
+          <ixx>0.10390639863844267</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.32028667871603644</iyy>
+          <iyy>0.18658328488844267</iyy>
           <iyz>0</iyz>
-          <izz>0.4671117047499999</izz>
+          <izz>0.28235635758333333</izz>
         </inertia>
       </inertial>
 
@@ -27,7 +28,7 @@
         <pose>0 0 0 0 0 1.5707963267948966</pose>
         <geometry>
           <mesh>
-            <uri>model://bluerov2/meshes/bluerov2_skid.dae</uri>
+            <uri>model://bluerov2/meshes/bluerov2_heavy_skid.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -38,7 +39,7 @@
         <pose>0 0 0.06 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.457 0.338 0.11263967475043049</size>
+            <size>0.457 0.338 0.06821565910944803</size>
           </box>
         </geometry>
       </collision>
@@ -75,15 +76,14 @@
       <mQ>0</mQ>
       <nR>0</nR>
       <!-- Second order stability derivative: -->
-      <xUabsU>-77.74000000000001</xUabsU>
-      <yVabsV>-124.818125</yVabsV>
+      <xUabsU>-33.800000000000004</xUabsU>
+      <yVabsV>-54.26875</yVabsV>
       <zWabsW>-73.37135</zWabsW>
       <kPabsP>-4.0</kPabsP>
       <mQabsQ>-4.0</mQabsQ>
       <nRabsR>-4.0</nRabsR>
     </plugin>
 
-<!-- http://www.ardusub.com/introduction/features.html -->
     <link name="thruster1">
       <pose>0.138 -0.098 -0.0137 -1.5707963267948966 1.5707963267948966 -0.7853981633974483</pose>
       <visual name="thruster_prop_visual">
@@ -316,7 +316,6 @@
       </axis>
 
     </joint>
-
     <joint name="thruster7_joint" type="revolute">
       <parent>base_link</parent>
       <child>thruster7</child>
@@ -334,7 +333,9 @@
     </joint>
 
     <!-- ARDUPILOT PLUGIN -->
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster1_joint</joint_name>
       <thrust_coefficient>0.02</thrust_coefficient>
@@ -344,7 +345,9 @@
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
     
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster2_joint</joint_name>
       <thrust_coefficient>0.02</thrust_coefficient>
@@ -354,7 +357,9 @@
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
 
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster3_joint</joint_name>
       <!-- Reverse spin to balance torque -->
@@ -365,7 +370,9 @@
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
 
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster4_joint</joint_name>
       <!-- Reverse spin to balance torque -->
@@ -376,7 +383,9 @@
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
 
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster5_joint</joint_name>
       <thrust_coefficient>0.02</thrust_coefficient>
@@ -386,7 +395,9 @@
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
 
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster6_joint</joint_name>
       <!-- Reverse spin to balance torque -->
@@ -396,8 +407,9 @@
       <velocity_control>true</velocity_control>
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
-
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster7_joint</joint_name>
       <!-- Reverse spin to balance torque -->
@@ -407,8 +419,9 @@
       <velocity_control>true</velocity_control>
       <use_angvel_cmd>False</use_angvel_cmd>
     </plugin>
-
-    <plugin filename="gz-sim-thruster-system" name="gz::sim::systems::Thruster">
+    <plugin
+        filename="gz-sim-thruster-system"
+        name="gz::sim::systems::Thruster">
       <namespace>bluerov2</namespace>
       <joint_name>thruster8_joint</joint_name>
       <thrust_coefficient>0.02</thrust_coefficient>
@@ -517,94 +530,110 @@
         param set RNGFND1_MIN_CM 20       # Min distance is 0.5m
         param set RNGFND1_MAX_CM 5000     # Max distance is 50m
         param set RNGFND1_ORIENT 25       # Down
-        param set RNGFND1_POS_X -0.15
-        param set RNGFND1_POS_Y 0
-        param set RNGFND1_POS_Z -0.095
+        param set RNGFND1_POS_X 0.11375
+        param set RNGFND1_POS_Y 0.0
+        param set RNGFND1_POS_Z 0.1133
       -->
-      <sensor>
+      <!-- <sensor>
         <type>sonar</type>
         <index>1</index>
         <topic>sonar_link/sensor/sonar</topic>
-      </sensor>
+      </sensor> -->
 
     </plugin>
 
     <!-- Left Camera link -->
-    <link name="stereo_link">
-      <!-- <pose>0.19 0.1 -0.201 0 1.5707963267948966 0</pose> -->
-      <pose>0.19 0 -0.201 0 0 0</pose>
-       <sensor name="left_camera" type="camera">
-        <pose>0 0.1 0 0 0 0</pose>
-        <camera>
-          <horizontal_fov>1.6</horizontal_fov>
-          <image>
-            <format>B8G8R8</format>
-            <width>1600</width>
-            <height>1200</height>
-          </image>
-          <!-- <distortion>
-            <k1>-0.0590</k1>
-            <k2>0.1311</k2>
-            <k3>-0.00693</k3>
-            <p1>0.0002</p1>
-            <p2>-0.0009</p2>
-            <center>0.486538813 0.501034167</center>
-          </distortion> -->
-          <noise>
-            <type>gaussian</type>
-            <mean>0.0</mean>
-            <stddev>0.0001</stddev>
-          </noise>
-          <clip>
-            <near>0.2</near>
-            <far>10</far>
-          </clip>
-        </camera>
-        <always_on>1</always_on>
-        <update_rate>25</update_rate>
-        <visualize>true</visualize>
-        <topic>Passive/left/image_raw</topic>
-        <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
-             This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>Pasive/left_camera_link</gz_frame_id>
-      </sensor>
-      <sensor name="right_camera" type="camera">
-        <pose>0 -0.1 0 0 0 0</pose>
-        <camera>
-          <horizontal_fov>1.6</horizontal_fov>
-          <image>
-            <format>B8G8R8</format>
-            <width>1600</width>
-            <height>1200</height>
-          </image>
-          <!-- <distortion>
-            <k1>-0.0445</k1>
-            <k2>0.0927</k2>
-            <k3>-0.00437</k3>
-            <p1>-0.0001</p1>
-            <p2>-0.0016</p2>
-            <center>0.485495 0.502530833</center>
-          </distortion> -->
-          <noise>
-            <type>gaussian</type>
-            <mean>0.0</mean>
-            <stddev>0.0001</stddev>
-          </noise>
-          <clip>
-            <near>0.2</near>
-            <far>10</far>
-          </clip>
-        </camera>
-        <always_on>1</always_on>
-        <update_rate>25</update_rate>
-        <visualize>true</visualize>
-        <topic>Passive/right/image_raw</topic>
-        <!-- Tell the ros_gz_image::image_bridge node to set the ROS2 frame_id to "camera_sensor".
-             This tag doesn't appear in the SDF spec, so `gz sdf -c` will generate a warning which you can ignore. -->
-        <gz_frame_id>Passive/right_camera_link</gz_frame_id>
-      </sensor>
+    <link name="passive_stereo_link">
+      <pose>0.195 -0.00728 -0.284 0 0 0</pose>
+        <sensor name="left_camera" type="camera">
+          <pose>0 0.2/2 0 0 0 0 </pose>
+          <camera>
+            <horizontal_fov>1.6</horizontal_fov>
+            <image>
+              <width>1600</width>
+              <height>1200</height>
+              <format>B8G8R8</format>
+            </image>
+            <distortion>
+              <k1>0.0</k1>
+              <k2>0.0</k2>
+              <k3>0.0</k3>
+              <p1>0.0</p1>
+              <p2>0.0</p2>
+              <center>0.5 0.5</center>
+            </distortion>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+            <clip>
+              <near>0.2</near>
+              <far>5</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>25</update_rate>
+          <visualize>true</visualize>
+          <topic>Passive/left/image_raw</topic>
+          <gz_frame_id>Passive/left_camera_link</gz_frame_id>
+        </sensor>
+        <sensor name="right_camera" type="camera">
+          <pose>0 -0.2/2 0 0 0 0 </pose>
+          <camera>
+            <horizontal_fov>1.6</horizontal_fov>
+            <image>
+              <width>1600</width>
+              <height>1200</height>
+              <format>B8G8R8</format>
+            </image>
+            <distortion>
+              <k1>0.0</k1>
+              <k2>0.0</k2>
+              <k3>0.0</k3>
+              <p1>0.0</p1>
+              <p2>0.0</p2>
+              <center>0.5 0.5</center>
+            </distortion>
+            <noise>
+              <type>gaussian</type>
+              <mean>0.0</mean>
+              <stddev>0.001</stddev>
+            </noise>
+            <clip>
+              <near>0.2</near>
+              <far>5</far>
+            </clip>
+          </camera>
+          <always_on>1</always_on>
+          <update_rate>25</update_rate>
+          <visualize>true</visualize>
+          <topic>Passive/right/image_raw</topic>
+          <gz_frame_id>Passive/right_camera_link</gz_frame_id>
+        </sensor>
+        <inertial>
+          <mass>0.1</mass>
+          <inertia>
+            <ixx>0.001</ixx>
+            <ixy>0</ixy>
+            <ixz>0</ixz>
+            <iyy>0.001</iyy>
+            <iyz>0</iyz>
+            <izz>0.001</izz>
+          </inertia>
+        </inertial>
+      </link>
+
+    <!-- Attach camera_link to base_link -->
+    <joint name="stereo_p_joint" type="fixed">
+      <parent>base_link</parent>
+      <child>passive_stereo_link</child>
+    </joint>
+
+    <link name='sonar_link'>
+      <pose>0.11375 0.0 0.1133 0 0 0</pose>
       <inertial>
-        <mass>0.1</mass>
+        <mass>0.105</mass>
         <inertia>
           <ixx>0.001</ixx>
           <ixy>0</ixy>
@@ -614,19 +643,48 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
+      <!-- Use a gpu_lidar sensor to emulate a Ping sonar sensor. The sensor is configured to generate 5x5=25 range
+           values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
+           ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
+      <sensor name="sonar_3d" type="gpu_lidar">
+      <pose>0 0 0 0 0 0</pose>
+      <topic>sonar_3d</topic>
+      <update_rate>10</update_rate>
+      <gz_frame_id>sonar_link</gz_frame_id>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>250</samples> 
+            <resolution>1</resolution>
+            <min_angle>-0.7853981633974483</min_angle> 
+            <max_angle>0.7853981633974483</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>66</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.3490658503988659</min_angle>
+             <max_angle>0.3490658503988659</max_angle>  
+          </vertical>
+        </scan>
+        <range>
+          <min>0.2</min>  
+          <max>15</max>   
+          <resolution>0.0015</resolution> 
+        </range>
+      </lidar>
+    </sensor>
     </link>
 
-    <!-- Attach camera_link to base_link -->
-    <joint name="left_camera_joint" type="fixed">
+    <joint name='sonar_joint' type='fixed'>
       <parent>base_link</parent>
-      <child>stereo_link</child>
+      <child>sonar_link</child>
     </joint>
 
 
     <link name='dvl_link'>
-      <pose>-0.15 0 -0.2 0 0 0</pose>
+      <pose>-0.075 0.0 -0.3213 0 0 0</pose>
       <inertial>
-        <mass>0.133</mass>
+        <mass>0.17</mass>
         <inertia>
           <ixx>0.001</ixx>
           <ixy>0</ixy>
@@ -636,16 +694,17 @@
           <izz>0.001</izz>
         </inertia>
       </inertial>
-      <visual name="ping_visual">
+
+      <visual name="dvl_visual">
         <geometry>
           <cylinder>
-            <length>0.035</length>
-            <radius>0.024</radius>
+            <length>0.025</length>
+            <radius>0.033</radius>
           </cylinder>
         </geometry>
         <material>
-          <ambient>0.0 0.2 0.0 1.0</ambient>
-          <diffuse>0.0 0.2 0.0 1.0</diffuse>
+          <ambient>0.2 0.0 0.0 1.0</ambient>
+          <diffuse>0.2 0.0 0.0 1.0</diffuse>
         </material>
       </visual>
       <sensor name="A50" type="custom" gz:type="dvl">
@@ -653,53 +712,54 @@
           <always_on>1</always_on>
           <update_rate>5</update_rate>
           <topic>/model/bluerov2/dvl/velocity</topic>
+          <gz_frame_id>dvl_link</gz_frame_id>
           <gz:dvl>
             <type>phased_array</type>
             <arrangement degrees="true">
               <beam id="1">
                 <aperture>2</aperture>
                 <rotation>45</rotation>
-                <tilt>30</tilt>
+                <tilt>22.5</tilt>
               </beam>
               <beam>
                 <aperture>2</aperture>
                 <rotation>135</rotation>
-                <tilt>30</tilt>
+                <tilt>22.5</tilt>
               </beam>
               <beam>
                 <aperture>2</aperture>
                 <rotation>-45</rotation>
-                <tilt>30</tilt>
+                <tilt>22.5</tilt>
               </beam>
               <beam>
                 <aperture>2</aperture>
                 <rotation>-135</rotation>
-                <tilt>30</tilt>
+                <tilt>22.5</tilt>
               </beam>
             </arrangement>
             <tracking>
               <bottom_mode>
                 <when>best</when>
                 <noise type="gaussian">
-                  <stddev>0.002</stddev>
+                  <mean>0.0</mean>
+                  <stddev>0.001</stddev>
                 </noise>
                 <visualize>false</visualize>
               </bottom_mode>
             </tracking>
             <resolution>0.01</resolution>
-            <maximum_range>100.</maximum_range>
+            <maximum_range>50.0</maximum_range>
             <minimum_range>0.1</minimum_range>
             <reference_frame>0 0 0 0 0 0</reference_frame>
           </gz:dvl>
-            <gz_frame_id>dvl_link</gz_frame_id>
-        </sensor>
+        </sensor>      
     </link>
 
-    <joint name='sonar_joint' type='fixed'>
-      <parent>base_link</parent>
+    <joint name='dvl_joint' type='fixed'>
+      <parent>base_link </parent>
       <child>dvl_link</child>
     </joint>
-
+    
     <!-- Publish the ground-truth pose for rviz -->
     <plugin
         filename="gz-sim-odometry-publisher-system"
