@@ -28,7 +28,7 @@ d135 = d90 + d45
 
 visual_x = 0.457
 visual_y = 0.338
-visual_z = 0.25
+visual_z = 0.4
 
 # Propellers
 propeller_size = "0.1 0.02 0.01"
@@ -46,7 +46,7 @@ passive_cam_izz = 0.001
 passive_cam_x = 0.195
 passive_cam_y = -0.00728
 passive_cam_z = -0.284
-p_cam_baseline = 0.2
+p_cam_baseline = 0.2 / 2 # The cameras are 200 mm apart, so each camera is 100 mm from the center
 p_cam_fov = 1.6
 p_cam_far_clip =  5
 p_img_width = 1600
@@ -76,6 +76,8 @@ sonar_h_angle = 45 *(math.pi/180) #Low Freq: 45, High freq: 20
 sonar_v_angle = 20 *(math.pi/180) #Low Freq: 20, High freq: 20
 sonar_max_range = 15 #Low freq: 15 m, High freq: 4 m
 sonar_resolution = 0.0015
+sonar_noise_mean = 0.002
+sonar_noise_std = 0.05
 # Waterlinked DVL A50
 dvl_x = -0.075
 dvl_y = 0.0
@@ -89,8 +91,8 @@ dvl_noise_mean = 0.0
 dvl_noise_std = 0.001
 dvl_max_range = 50.0
 # Mass
-base_mass = 10
-total_mass = base_mass + 6 * propeller_mass + 2 * passive_cam_mass + sonar_mass + dvl_mass
+base_mass = 14
+total_mass = base_mass + 8 * propeller_mass + 2 * passive_cam_mass + sonar_mass + dvl_mass
 
 # The ROV should be positively buoyant
 buoyancy_adjustment = 0.05

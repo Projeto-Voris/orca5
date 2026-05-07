@@ -546,7 +546,7 @@
     <link name="passive_stereo_link">
       <pose>@passive_cam_x @passive_cam_y @passive_cam_z 0 0 0</pose>
         <sensor name="left_camera" type="camera">
-          <pose>0 @p_cam_baseline/2 0 0 0 0 </pose>
+          <pose>0 @p_cam_baseline 0 0 0 0 </pose>
           <camera>
             <horizontal_fov>@p_cam_fov</horizontal_fov>
             <image>
@@ -579,7 +579,7 @@
           <gz_frame_id>Passive/left_camera_link</gz_frame_id>
         </sensor>
         <sensor name="right_camera" type="camera">
-          <pose>0 -@p_cam_baseline/2 0 0 0 0 </pose>
+          <pose>0 -@p_cam_baseline 0 0 0 0 </pose>
           <camera>
             <horizontal_fov>@p_cam_fov</horizontal_fov>
             <image>
@@ -647,7 +647,7 @@
            values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
            ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
       <sensor name="sonar_3d" type="gpu_lidar">
-      <pose>0 0 0 0 0 0</pose>
+      <pose>0 0 0 -@d180 0 0</pose>
       <topic>sonar_3d</topic>
       <update_rate>@sonar_hz</update_rate>
       <gz_frame_id>sonar_link</gz_frame_id>
@@ -671,6 +671,11 @@
           <max>@sonar_max_range</max>   
           <resolution>@sonar_resolution</resolution> 
         </range>
+         <noise>
+            <type>gaussian</type>
+            <mean>@sonar_noise_mean</mean>
+            <stddev>@sonar_noise_std</stddev>
+          </noise>
       </lidar>
     </sensor>
     </link>

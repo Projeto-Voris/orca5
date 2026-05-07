@@ -2,7 +2,6 @@
 import rclpy
 from rclpy.node import Node
 from mavros_msgs.msg import OverrideRCIn
-from example_interfaces.srv import Trigger  # Replace with the actual service type you need
 from pynput import keyboard
 from mavros_msgs.srv import CommandBool
 

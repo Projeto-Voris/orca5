@@ -37,6 +37,12 @@ foreach(MODEL_NAME ${MODEL_NAMES})
   )
 endforeach()
 
+install(
+        PROGRAMS
+        scripts/keyboard_control.py
+        DESTINATION lib/${PROJECT_NAME}
+)
+
 # Install other directories
 install(
   DIRECTORY
