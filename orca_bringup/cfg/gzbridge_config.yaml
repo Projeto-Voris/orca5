@@ -25,6 +25,7 @@
   gz_type_name: "gz.msgs.CameraInfo"
   direction: "GZ_TO_ROS"
 
+# Sonar 3D-15 pointcloud (gpu_laser)
 - ros_topic_name: "/sonar_3d/pointcloud"
   gz_topic_name: "/sonar_3d/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
@@ -51,7 +52,7 @@
   gz_type_name: "gz.msgs.Pose_V"
   direction: "GZ_TO_ROS"
 
-# IMU com o remapeamento desejado aplicado diretamente no nome do tópico ROS
+# IMU
 - ros_topic_name: "model/bluerov2/imu"
   gz_topic_name: "/world/inpetu/model/bluerov2/link/base_link/sensor/imu_sensor/imu"
   ros_type_name: "sensor_msgs/msg/Imu"

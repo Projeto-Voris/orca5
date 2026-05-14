@@ -48,7 +48,7 @@ passive_cam_y = -0.00728
 passive_cam_z = -0.284
 p_cam_baseline = 0.2 / 2 # The cameras are 200 mm apart, so each camera is 100 mm from the center
 p_cam_fov = 1.6
-p_cam_far_clip =  5
+p_cam_far_clip =  7
 p_img_width = 1600
 p_img_height = 1200
 p_noise_mean = 0.0
@@ -58,7 +58,7 @@ p_noise_std = 0.001
 # IMU position
 imu_x = 0
 imu_y = 0
-imu_z = -0.1
+imu_z = 0
 
 # Waterlinked Sonar 3D-15
 sonar_mass = 0.105
@@ -69,7 +69,7 @@ sonar_ixx = 0.001
 sonar_iyy = 0.001
 sonar_izz = 0.001
 
-sonar_hz = 10 # Low freq: 5 Hz, High freq: 20 Hz
+sonar_hz = 5 # Low freq: 5 Hz, High freq: 20 Hz
 sonar_h_samples = 250
 sonar_v_samples = 66
 sonar_h_angle = 45 *(math.pi/180) #Low Freq: 45, High freq: 20
