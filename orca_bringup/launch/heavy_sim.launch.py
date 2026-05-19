@@ -117,7 +117,8 @@ def generate_launch_description():
                 '-I0',
                 '--home', '33.810313,-118.39386700000001,0.0,0'
             ],
-            output='screen'
+            output='screen',
+            condition=IfCondition(LaunchConfiguration('ardusub')),
         ),
 
         # Launch Gazebo Sim
@@ -152,9 +153,10 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'camera_info_url': 'file://' + sim_left_ini,
-                'camera_name': 'left_sim_camera',
+                'camera_name': 'left_camera',
                 'frame_id': 'left_camera_link',
                 'timer_period_ms': 50,
+                'use_sim_time': True,
             }],
             remappings=[
                 ('/camera_info', '/Passive/left/camera_info'),
@@ -168,13 +170,27 @@ def generate_launch_description():
             output='screen',
             parameters=[{
                 'camera_info_url': 'file://' + sim_right_ini,
-                'camera_name': 'right_sim_camera',
+                'camera_name': 'right_camera',
                 'frame_id': 'right_camera_link',
                 'timer_period_ms': 50,
+                'use_sim_time': True,
             }],
             remappings=[
-                ('/camera_info', '/stereo_right/camera_info'),
+                ('/camera_info', '/Passive/right/camera_info'),
             ],
+        ),
+        
+        Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        name='clock_bridge',
+        parameters=[{
+            'use_sim_time': False # A ponte em si não usa sim_time, ela o gera
+        }],
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
+        ],
+        output='screen'
         ),
 
         # Publish ground truth pose from Ignition Gazebo

@@ -100,8 +100,8 @@ public:
       std::chrono::milliseconds{cxt_.timer_period_ms_}, [this]()
       {
         auto camera_info_msg = camera_info_manager_->getCameraInfo();
-        // camera_info_msg.header.stamp = now();
-        // camera_info_msg.header.frame_id = cxt_.frame_id_;
+        camera_info_msg.header.stamp = now();
+        camera_info_msg.header.frame_id = cxt_.frame_id_;
         camera_info_pub_->publish(camera_info_msg);
       });
   }
