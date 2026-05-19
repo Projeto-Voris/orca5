@@ -30,6 +30,8 @@ namespace orca
 
 geometry_msgs::msg::Accel Model::drag_accel(const geometry_msgs::msg::Twist & vel) const
 {
+  // input: velocity (cmd_vel or estimated velocity) --> type: Twist
+  // output: acceleration caused by drag
   geometry_msgs::msg::Accel result;
   result.linear.x = drag_accel_x(vel.linear.x);
   result.linear.y = drag_accel_y(vel.linear.y);
@@ -40,6 +42,7 @@ geometry_msgs::msg::Accel Model::drag_accel(const geometry_msgs::msg::Twist & ve
 
 geometry_msgs::msg::Wrench Model::accel_to_wrench(const geometry_msgs::msg::Accel & accel) const
 {
+  // converts: acceleration --> force + torque (using F=m*a)
   geometry_msgs::msg::Wrench result;
   result.force.x = accel_to_force(accel.linear.x);
   result.force.y = accel_to_force(accel.linear.y);
@@ -50,6 +53,7 @@ geometry_msgs::msg::Wrench Model::accel_to_wrench(const geometry_msgs::msg::Acce
 
 orca_msgs::msg::Effort Model::wrench_to_effort(const geometry_msgs::msg::Wrench & wrench) const
 {
+  // converts: force --> normalized effort between (-1,1)
   orca_msgs::msg::Effort result;
   result.force.x = clamp(force_to_effort_xy(wrench.force.x), 1.0);
   result.force.y = clamp(force_to_effort_xy(wrench.force.y), 1.0);
@@ -60,6 +64,7 @@ orca_msgs::msg::Effort Model::wrench_to_effort(const geometry_msgs::msg::Wrench 
 
 orca_msgs::msg::Effort Model::accel_to_effort(const geometry_msgs::msg::Accel & accel) const
 {
+  // combination: converts: accel --> force --> effort
   return wrench_to_effort(accel_to_wrench(accel));
 }
 

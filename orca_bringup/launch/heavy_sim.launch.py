@@ -25,7 +25,7 @@
 """
 Launch a simulation.
 
-Includes Gazebo, ArduSub, RViz, mavros, all ROS nodes.
+Includes  , ArduSub, RViz, mavros, all ROS nodes.
 """
 
 import os
@@ -60,7 +60,7 @@ def generate_launch_description():
 
         DeclareLaunchArgument(
             'base',
-            default_value='True',
+            default_value='False',
             description='Launch base controller?',
         ),
 
@@ -105,7 +105,7 @@ def generate_launch_description():
         #     output='screen',
         #     condition=IfCondition(LaunchConfiguration('ardusub')),
         # ),
-
+        
         # 2. Define the ArduSub process
         ExecuteProcess(
             cmd=[

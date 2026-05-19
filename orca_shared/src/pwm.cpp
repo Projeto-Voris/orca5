@@ -29,6 +29,7 @@ namespace orca
 
 uint16_t tilt_to_pwm(const int tilt)
 {
+  // converts: camera tilt angle in PWN signal
   return orca::scale(
     tilt, TILT_MIN, TILT_MAX,
     PWM_TILT_45_UP, PWM_TILT_45_DOWN);
@@ -36,6 +37,7 @@ uint16_t tilt_to_pwm(const int tilt)
 
 int pwm_to_tilt(const uint16_t pwm)
 {
+  // converts: PWN signal in camera tilt angle
   return orca::scale(
     pwm, PWM_TILT_45_UP,
     PWM_TILT_45_DOWN,
@@ -44,6 +46,7 @@ int pwm_to_tilt(const uint16_t pwm)
 
 uint16_t brightness_to_pwm(const int brightness)
 {
+  // converts: light intensity in PWN
   return orca::scale(
     brightness, BRIGHTNESS_MIN, BRIGHTNESS_MAX,
     PWM_LIGHTS_OFF, PWM_LIGHTS_FULL);
@@ -51,6 +54,7 @@ uint16_t brightness_to_pwm(const int brightness)
 
 int pwm_to_brightness(const uint16_t pwm)
 {
+  // converts: PWN in light intensity
   return orca::scale(
     pwm, PWM_LIGHTS_OFF, PWM_LIGHTS_FULL,
     BRIGHTNESS_MIN, BRIGHTNESS_MAX);
@@ -58,7 +62,9 @@ int pwm_to_brightness(const uint16_t pwm)
 
 uint16_t effort_to_pwm(const uint16_t thrust_dz_pwm, const double effort)
 {
-  uint16_t thrust_range_pwm = 400 - thrust_dz_pwm;
+  // effort: Normalized control input between (-1,1)
+  // converts: efforts in PWM signal
+  uint16_t thrust_range_pwm = 400 - thrust_dz_pwm; // define usable PWM range
 
   return clamp(
     static_cast<uint16_t>(PWM_THRUST_STOP +

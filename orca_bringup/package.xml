@@ -26,6 +26,8 @@
 
   <test_depend>python3-pytest</test_depend>
 
+  <exec_depend>python3-pynput</exec_depend>
+
   <!-- Only required for simulation -->
   <!-- <depend>ardupilot_gazebo</depend> -->
   <!-- <depend>ros_gz_bridge</depend> -->

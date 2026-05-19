@@ -123,6 +123,7 @@ class BaseController : public rclcpp::Node
   rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr ext_nav_pub_;
   rclcpp::Publisher<orca_msgs::msg::Motion>::SharedPtr motion_pub_;
   rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr odom_pub_;
+  // topicos do mavros
   rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
   rclcpp::Publisher<geographic_msgs::msg::GeoPoseStamped>::SharedPtr setpoint_pub_;
 
@@ -237,7 +238,8 @@ class BaseController : public rclcpp::Node
 
       motion_pub_->publish(underwater_motion_->motion());
       odom_pub_->publish(underwater_motion_->odometry());
-
+      
+      // comandos do keyboard e nav ele diz ser que "nos" estamos controlando
       if (conn_) {
         publish_rc();
         publish_setpoint();

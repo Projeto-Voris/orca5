@@ -42,7 +42,9 @@ namespace orca_base
 // I'm seeing crashes when I re-start nav2. For now just leave it running if it was started.
 #undef ALLOW_NAV2_SHUTDOWN
 
+// especifica um namespace
 using namespace std::chrono_literals;
+// alias para facilitar a chamada do tipo
 using TargetMode = orca_msgs::action::TargetMode;
 using GoalHandleTargetMode = rclcpp_action::ServerGoalHandle<TargetMode>;
 
@@ -51,12 +53,15 @@ class Manager : public rclcpp::Node
   // String constants
   const std::string MAVROS_ARM_SRV = "/mavros/cmd/arming";
   const std::string MAVROS_SET_MODE_SRV = "/mavros/set_mode";
+  // ensures data arrives at correct frequency
   const std::string MAVROS_SET_MSG_INTERVAL_SRV = "/mavros/set_message_interval";
   const std::string NAV2_MGR_SRV = "/lifecycle_manager_navigation/manage_nodes";
   const std::string BASE_SRV = "/conn";
 
   // Parameters
+  // iniciliza um vetor de inteiros para armazenar os ids das mensagens mavlink
   std::vector<int64_t> mav_msg_ids_;
+  // iniciliza um inteiro de contagem = 0
   int64_t mav_msg_rate_{};
 
   // ArduSub has quite a few operating modes, we care about these
@@ -101,6 +106,7 @@ class Manager : public rclcpp::Node
 
   bool set_arm(bool arm)
   {
+    // call mavros/cmd/arming
     auto request = std::make_shared<mavros_msgs::srv::CommandBool::Request>();
     auto response = std::make_shared<mavros_msgs::srv::CommandBool::Response>();
     request->value = arm;
@@ -114,6 +120,7 @@ class Manager : public rclcpp::Node
 
   bool set_ardusub_mode(uint8_t base_mode, const std::string & custom_mode)
   {
+    // change mode of the ardusub calling /mavros/set_mode
     auto request = std::make_shared<mavros_msgs::srv::SetMode::Request>();
     auto response = std::make_shared<mavros_msgs::srv::SetMode::Response>();
     request->base_mode = base_mode;
@@ -151,6 +158,7 @@ class Manager : public rclcpp::Node
 
   bool call_nav2(uint8_t command)
   {
+    // Controls Nav2 autonomy
     auto request = std::make_shared<nav2_msgs::srv::ManageLifecycleNodes::Request>();
     auto response = std::make_shared<nav2_msgs::srv::ManageLifecycleNodes::Response>();
     request->command = command;
@@ -164,6 +172,8 @@ class Manager : public rclcpp::Node
 
   bool call_base(bool conn)
   {
+    // this control the base controller calling the service /conn
+    // manager --> /conn --> BaseController --> robot moves
     auto request = std::make_shared<std_srvs::srv::SetBool::Request>();
     auto response = std::make_shared<std_srvs::srv::SetBool::Response>();
     request->data = conn;
@@ -177,6 +187,7 @@ class Manager : public rclcpp::Node
 
   void go_auv()
   {
+    // arm robot --> set mode = ALT_HOLD --> enable basecontroller /conn = true --> start Nav2 --> robot moves autonomously
     if (ardusub_connected_ && have_pose_) {
       if (!ardusub_armed_) {
         set_arm(true);
@@ -193,6 +204,7 @@ class Manager : public rclcpp::Node
       }
 
       if (!nav2_active_) {
+        // start navigation stack
         if (call_nav2(nav2_msgs::srv::ManageLifecycleNodes::Request::STARTUP)) {
           nav2_active_ = true;
         }
@@ -217,6 +229,7 @@ class Manager : public rclcpp::Node
 
   void go_rov()
   {
+    // disable basecontroller --> pilot controls robot manually
     if (ardusub_connected_ && have_pose_) {
       // Don't arm or disarm, leave this to the pilot
 
@@ -249,6 +262,7 @@ class Manager : public rclcpp::Node
 
   void go_disarmed()
   {
+    // disarm robot --> set_mode=MANUAL --> disable basecontroller --> Stop Nav2 --> safe state
     if (ardusub_connected_ /* don't care about have_pose */) {
       if (ardusub_armed_) {
         set_arm(false);
@@ -288,12 +302,15 @@ class Manager : public rclcpp::Node
 
   void go_to_target_mode()
   {
+    // chooses between auv, rov and disarmed mode
     if (current_mode_ != target_mode_) {
       switch (target_mode_) {
         case orca_msgs::action::TargetMode::Goal::ORCA_MODE_AUV:
+        // movimentação autonoma
           go_auv();
           break;
         case orca_msgs::action::TargetMode::Goal::ORCA_MODE_ROV:
+        // movimentação remota
           go_rov();
           break;
         case orca_msgs::action::TargetMode::Goal::ORCA_MODE_DISARMED:
@@ -387,7 +404,8 @@ public:
 
     rclcpp::QoS reliable(10);
     reliable.reliable();
-
+    
+    // listen to mavros state - connected, armed and mode(manual, alt_hold)
     state_sub_ = create_subscription<mavros_msgs::msg::State>(
       "/mavros/state", reliable,
       [this](mavros_msgs::msg::State::ConstSharedPtr msg) // NOLINT
@@ -414,6 +432,7 @@ public:
               });
 
             using namespace std::placeholders;
+            // you can request AUV / ROV / DISARMED mode --> ros2 action send_goal /set_target_mode
             set_target_mode_srv_ = rclcpp_action::create_server<TargetMode>(
               this,
               "set_target_mode",

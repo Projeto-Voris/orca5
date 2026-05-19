@@ -53,6 +53,8 @@ install(
 install(
   PROGRAMS # PROGRAMS sets execute bits, FILES clears them
   ${CMAKE_CURRENT_SOURCE_DIR}/scripts/mission_runner.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/keyboard_control.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/scripts/robot_controller.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

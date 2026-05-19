@@ -30,6 +30,7 @@ mavros:
       - local_position
       - rc_io
       - setpoint_position
+      - setpoint_velocity
       - vision_pose
       - param
 
