@@ -51,8 +51,80 @@
         <pose>0 0 0 3.141592653589793 0 0</pose>
         <always_on>1</always_on>
         <update_rate>1000.0</update_rate>
-      </sensor>
-
+        <imu>
+          <enable_orientation>0</enable_orientation>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+        </sensor>
     </link>
 
     <!-- Hydrodynamics plugin -->
@@ -85,7 +157,7 @@
     </plugin>
 
     <link name="thruster1">
-      <pose>0.138 -0.098 -0.0137 -1.5707963267948966 1.5707963267948966 -0.7853981633974483</pose>
+      <pose>0.1465 -0.1065 -0.068 -1.5707963267948966 1.5707963267948966 -0.7853981633974483</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 1.5707963267948966 0 0</pose>
         <geometry>
@@ -108,7 +180,7 @@
     </link>
 
     <link name="thruster2">
-      <pose>0.138 0.098 -0.0137 -1.5707963267948966 1.5707963267948966 -2.356194490192345</pose>
+      <pose>0.1465 0.1065 -0.068 -1.5707963267948966 1.5707963267948966 -2.356194490192345</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -1.5707963267948966 0 0</pose>
         <geometry>
@@ -131,7 +203,7 @@
     </link>
 
     <link name="thruster3">
-      <pose>-0.138 -0.098 -0.0137 -1.5707963267948966 1.5707963267948966 0.7853981633974483</pose>
+      <pose>-0.1465 -0.1065 -0.068 -1.5707963267948966 1.5707963267948966 0.7853981633974483</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -1.5707963267948966 0 0</pose>
         <geometry>
@@ -154,7 +226,7 @@
     </link>
 
     <link name="thruster4">
-      <pose>-0.138 0.098 -0.0137 -1.5707963267948966 1.5707963267948966 2.356194490192345</pose>
+      <pose>-0.1465 0.1065 -0.068 -1.5707963267948966 1.5707963267948966 2.356194490192345</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 1.5707963267948966 0 0</pose>
         <geometry>
@@ -177,7 +249,7 @@
     </link>
 
     <link name="thruster5">
-      <pose>0.12 -0.218 0.048 0 0 0</pose>
+      <pose>0.12 -0.218 -0.0137 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -1.5707963267948966 0 1.5707963267948966</pose>
         <geometry>
@@ -200,7 +272,7 @@
     </link>
 
     <link name="thruster6">
-      <pose>0.12 0.218 0.048 0 0 0</pose>
+      <pose>0.12 0.218 -0.0137 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 1.5707963267948966 0 1.5707963267948966</pose>
         <geometry>
@@ -223,7 +295,7 @@
     </link>
 
      <link name="thruster7">
-      <pose>-0.12 -0.218 0.048 0 0 0</pose>
+      <pose>-0.12 -0.218 -0.0137 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 1.5707963267948966 0 1.5707963267948966</pose>
         <geometry>
@@ -246,7 +318,7 @@
     </link>
 
      <link name="thruster8">
-      <pose>-0.12 0.218 0.048 0 0 0</pose>
+      <pose>-0.12 0.218 -0.0137 0 0 0</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 1.5707963267948966 0 1.5707963267948966</pose>
         <geometry>

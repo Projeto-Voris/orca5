@@ -50,6 +50,7 @@
             </graded_buoyancy>
             <!-- Enable by model name -->
             <enable>orca4</enable>
+            <enable>bluerov2</enable>
         </plugin>
 
         <light type="directional" name="sun">

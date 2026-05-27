@@ -51,8 +51,80 @@
         <pose>@imu_x @imu_y @imu_z @d180 0 0</pose>
         <always_on>1</always_on>
         <update_rate>1000.0</update_rate>
-      </sensor>
-
+        <imu>
+          <enable_orientation>0</enable_orientation>
+          <angular_velocity>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.00084376</stddev>
+                <bias_mean>0.00075</bias_mean>
+                <bias_stddev>0.005</bias_stddev>
+                <dynamic_bias_stddev>0.000041138</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>400.0</dynamic_bias_correlation_time>
+                <precision>0.00025</precision>
+              </noise>
+            </z>
+          </angular_velocity>
+          <linear_acceleration>
+            <x>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </x>
+            <y>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </y>
+            <z>
+              <noise type="gaussian">
+                <mean>0</mean>
+                <stddev>0.0086218</stddev>
+                <bias_mean>0.05</bias_mean>
+                <bias_stddev>0.0075</bias_stddev>
+                <dynamic_bias_stddev>0.00023163</dynamic_bias_stddev>
+                <dynamic_bias_correlation_time>175.0</dynamic_bias_correlation_time>
+                <precision>0.005</precision>
+              </noise>
+            </z>
+          </linear_acceleration>
+        </imu>
+        </sensor>
     </link>
 
     <!-- Hydrodynamics plugin -->
@@ -85,7 +157,7 @@
     </plugin>
 
     <link name="thruster1">
-      <pose>@thruster_h_x -@thruster_h_y -@thruster_h_z -@d90 @d90 -@d45</pose>
+      <pose>@thruster_h_x -@thruster_h_y @thruster_h_z -@d90 @d90 -@d45</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 @d90 0 0</pose>
         <geometry>
@@ -108,7 +180,7 @@
     </link>
 
     <link name="thruster2">
-      <pose>@thruster_h_x @thruster_h_y -@thruster_h_z -@d90 @d90 -@d135</pose>
+      <pose>@thruster_h_x @thruster_h_y @thruster_h_z -@d90 @d90 -@d135</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -@d90 0 0</pose>
         <geometry>
@@ -131,7 +203,7 @@
     </link>
 
     <link name="thruster3">
-      <pose>-@thruster_h_x -@thruster_h_y -@thruster_h_z -@d90 @d90 @d45</pose>
+      <pose>-@thruster_h_x -@thruster_h_y @thruster_h_z -@d90 @d90 @d45</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 -@d90 0 0</pose>
         <geometry>
@@ -154,7 +226,7 @@
     </link>
 
     <link name="thruster4">
-      <pose>-@thruster_h_x @thruster_h_y -@thruster_h_z -@d90 @d90 @d135</pose>
+      <pose>-@thruster_h_x @thruster_h_y @thruster_h_z -@d90 @d90 @d135</pose>
       <visual name="thruster_prop_visual">
         <pose>0 0 0 @d90 0 0</pose>
         <geometry>

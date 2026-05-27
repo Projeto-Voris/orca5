@@ -54,10 +54,10 @@ def generate_launch_description():
     
     return LaunchDescription([
         DeclareLaunchArgument('ardusub', default_value='True', description='Launch ArduSUB with SIM_JSON?'),
-        DeclareLaunchArgument( 'gzclient', default_value='True', description='Launch Gazebo UI?'),
+        DeclareLaunchArgument( 'gzclient', default_value='False', description='Launch Gazebo UI?'),
         DeclareLaunchArgument( 'mavros', default_value='True', description='Launch mavros?'),
         DeclareLaunchArgument('rviz', default_value='True', description='Launch rviz?'),
-        DeclareLaunchArgument('passive', default_value='True', description='Launch Passive stereo process'),
+        DeclareLaunchArgument('passive', default_value='False', description='Launch Passive stereo process'),
         DeclareLaunchArgument('slam', default_value='True', description='Enable SLAM in passive stereo process?'),
         DeclareLaunchArgument('disparity', default_value='True', description='Enable disparity in passive stereo process?'),
         DeclareLaunchArgument('gazebo_bridge_file', default_value=PathJoinSubstitution([FindPackageShare('orca_bringup'), 'cfg', 'gzbridge_config.yaml']), description='Caminho para o arquivo de configuração do Gazebo Bridge'), 
@@ -94,31 +94,6 @@ def generate_launch_description():
             condition=UnlessCondition(LaunchConfiguration('gzclient')),
         ),
 
-        # Node(
-        #     package='ros_gz_bridge',
-        #     executable='parameter_bridge',
-        #     parameters=[{'config_file': gz_bridge_file}],
-        #     output='screen',
-        # ),
-        # ComposableNodeContainer(
-        #         name='lidar_container',
-        #         namespace='',
-        #         package='rclcpp_components',
-        #         executable='component_container',
-        #         composable_node_descriptions=[
-        #             ComposableNode(
-        #                 package='ros_gz_bridge',
-        #                 plugin='ros_gz_bridge::RosGzBridge',
-        #                 parameters=[{
-        #                     'config_file': LaunchConfiguration('gazebo_bridge_file'),
-        #                     'use_sim_time': True, # Vital para sincronia com Gazebo 
-        #                     'use_intra_process_comms': True # Habilita Zero-Copy [cite: 355, 410]
-        #                 }]
-        #             ),
-        #         ],
-        #         output='screen',
-        # ),
-
         # Translate messages MAV <-> ROS
         Node(
             package='mavros',
@@ -130,12 +105,12 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('mavros')),
         ),
 
-        Node(
-            package='foxglove_bridge',
-            executable='foxglove_bridge',
-            output='log',
-            condition=UnlessCondition(LaunchConfiguration('rviz')),
-        ),
+        # Node(
+        #     package='foxglove_bridge',
+        #     executable='foxglove_bridge',
+        #     output='log',
+        #     condition=UnlessCondition(LaunchConfiguration('rviz')),
+        # ),
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([
