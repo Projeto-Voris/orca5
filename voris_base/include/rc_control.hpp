@@ -54,8 +54,8 @@ private:
     bool set_arm(bool arm);
     bool disarm();
     bool set_mode(const std::string & mode);
-    uint16_t map_pwm(float value, float threshold);
-    void publish_rc(float forward, float lateral, float yaw);
+    uint16_t map_pwm(float value, bool reverse, float threshold);
+    void publish_rc(float forward, float lateral, float depth, float yaw);
     void follow_wp();
 
     struct waypoint
@@ -69,6 +69,20 @@ private:
     std::vector<waypoint> wp_;
     double gain_;
     size_t index_wp_;
+
+    static constexpr double PI = 3.14159265358979323846;
+
+    // Create a variable to store the current behavior mode of the sub
+    enum class controlState
+    {
+        ROTATE,
+        MOVE
+    };
+
+    // initial state
+    controlState state_ = controlState::ROTATE;
+    // define um estado inicial onde a rotação é positiva
+    double rotate_direction_ = 1.0;
 };
 
 #endif // RC_CONTROL_HPP
