@@ -622,8 +622,8 @@
           <camera>
             <horizontal_fov>1.6</horizontal_fov>
             <image>
-              <width>1600</width>
-              <height>1200</height>
+              <width>800</width>
+              <height>600</height>
               <format>B8G8R8</format>
             </image>
             <distortion>
@@ -655,8 +655,8 @@
           <camera>
             <horizontal_fov>1.6</horizontal_fov>
             <image>
-              <width>1600</width>
-              <height>1200</height>
+              <width>800</width>
+              <height>600</height>
               <format>B8G8R8</format>
             </image>
             <distortion>
@@ -719,20 +719,20 @@
            values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
            ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
       <sensor name="sonar_3d" type="gpu_lidar">
-      <pose>0 0 0 -3.141592653589793 0 0</pose>
+      <pose>0 0 0 0 0 0</pose>
       <topic>sonar_3d</topic>
-      <update_rate>5</update_rate>
-      <gz_frame_id>sonar_link</gz_frame_id>
+      <update_rate>20</update_rate>
+      <gz_frame_id>base_link</gz_frame_id>
       <lidar>
         <scan>
           <horizontal>
-            <samples>250</samples> 
+            <samples>125</samples> 
             <resolution>1</resolution>
             <min_angle>-0.7853981633974483</min_angle> 
             <max_angle>0.7853981633974483</max_angle>
           </horizontal>
           <vertical>
-            <samples>66</samples>
+            <samples>33</samples>
             <resolution>1</resolution>
             <min_angle>-0.3490658503988659</min_angle>
              <max_angle>0.3490658503988659</max_angle>  
@@ -741,14 +741,15 @@
         <range>
           <min>0.2</min>  
           <max>15</max>   
-          <resolution>0.0015</resolution> 
+          <resolution>0.015</resolution> 
         </range>
          <noise>
             <type>gaussian</type>
-            <mean>0.002</mean>
-            <stddev>0.05</stddev>
+            <mean>0.02</mean>
+            <stddev>0.005</stddev>
           </noise>
       </lidar>
+      <!-- <reference_frame>0 0 0 3.141592653589793 0 0</reference_frame> -->
     </sensor>
     </link>
 
@@ -759,7 +760,7 @@
 
 
     <link name='dvl_link'>
-      <pose>-0.075 0.0 -0.3213 0 0 0</pose>
+      <pose>-0.075 0.0 -0.3213 3.141592653589793 0 0</pose>
       <inertial>
         <mass>0.17</mass>
         <inertia>
@@ -827,7 +828,7 @@
             <resolution>0.01</resolution>
             <maximum_range>50.0</maximum_range>
             <minimum_range>0.1</minimum_range>
-            <reference_frame>0 0 0 0 0 0</reference_frame>
+            <reference_frame>0 0 0 3.141592653589793 0 0</reference_frame>
           </gz:dvl>
         </sensor>      
     </link>

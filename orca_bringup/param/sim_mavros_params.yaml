@@ -41,7 +41,7 @@ mavros_node:
 mavros/local_position:
   ros__parameters:
     frame_id: "map"
-    tf.send: true
+    tf.send: false
     tf.frame_id: "map"
     tf.child_frame_id: "base_link"
     tf.send_fcu: false
@@ -58,8 +58,8 @@ mavros/imu:
   ros__parameters:
     frame_id: "base_link"
     # need find actual values
-    linear_acceleration_stdev: 0.0003
-    angular_velocity_stdev: 0.0003490659  # 0.02 degrees
+    linear_acceleration_stdev: 0.0086218
+    angular_velocity_stdev: 0.0008437607  # 0.02 degrees
     orientation_stdev: 1.0
     magnetic_stdev: 0.0
 

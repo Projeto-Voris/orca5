@@ -49,8 +49,8 @@ passive_cam_z = -0.284
 p_cam_baseline = 0.2 / 2 # The cameras are 200 mm apart, so each camera is 100 mm from the center
 p_cam_fov = 1.6
 p_cam_far_clip =  7
-p_img_width = 1600
-p_img_height = 1200
+p_img_width = 800
+p_img_height = 600
 p_noise_mean = 0.0
 p_noise_std = 0.001
 
@@ -69,15 +69,15 @@ sonar_ixx = 0.001
 sonar_iyy = 0.001
 sonar_izz = 0.001
 
-sonar_hz = 5 # Low freq: 5 Hz, High freq: 20 Hz
-sonar_h_samples = 250
-sonar_v_samples = 66
+sonar_hz = 20 # Low freq: 5 Hz, High freq: 20 Hz
+sonar_h_samples = 125 #250
+sonar_v_samples = 33 #66
 sonar_h_angle = 45 *(math.pi/180) #Low Freq: 45, High freq: 20
 sonar_v_angle = 20 *(math.pi/180) #Low Freq: 20, High freq: 20
 sonar_max_range = 15 #Low freq: 15 m, High freq: 4 m
-sonar_resolution = 0.0015
-sonar_noise_mean = 0.002
-sonar_noise_std = 0.05
+sonar_resolution = 0.015
+sonar_noise_mean = 0.02
+sonar_noise_std = 0.005
 # Waterlinked DVL A50
 dvl_x = -0.075
 dvl_y = 0.0

@@ -719,10 +719,10 @@
            values in a pretty tight square. (The beam angle is 17 degrees in x or y, or 24 degrees diagonally.)
            ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
       <sensor name="sonar_3d" type="gpu_lidar">
-      <pose>0 0 0 -@d180 0 0</pose>
+      <pose>0 0 0 0 0 0</pose>
       <topic>sonar_3d</topic>
       <update_rate>@sonar_hz</update_rate>
-      <gz_frame_id>sonar_link</gz_frame_id>
+      <gz_frame_id>base_link</gz_frame_id>
       <lidar>
         <scan>
           <horizontal>
@@ -749,6 +749,7 @@
             <stddev>@sonar_noise_std</stddev>
           </noise>
       </lidar>
+      <!-- <reference_frame>0 0 0 @d180 0 0</reference_frame> -->
     </sensor>
     </link>
 
@@ -759,7 +760,7 @@
 
 
     <link name='dvl_link'>
-      <pose>@dvl_x @dvl_y @dvl_z 0 0 0</pose>
+      <pose>@dvl_x @dvl_y @dvl_z @d180 0 0</pose>
       <inertial>
         <mass>@dvl_mass</mass>
         <inertia>
@@ -827,7 +828,7 @@
             <resolution>0.01</resolution>
             <maximum_range>@dvl_max_range</maximum_range>
             <minimum_range>0.1</minimum_range>
-            <reference_frame>0 0 0 0 0 0</reference_frame>
+            <reference_frame>0 0 0 @d180 0 0</reference_frame>
           </gz:dvl>
         </sensor>      
     </link>
