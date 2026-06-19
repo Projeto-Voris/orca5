@@ -1,5 +1,5 @@
-#ifndef RC_CONTROL_HPP
-#define RC_CONTROL_HPP
+#ifndef RC_CONTROL_SPLINE_HPP
+#define RC_CONTROL_SPLINE_HPP
 
 #include <memory>
 #include <string>
@@ -13,6 +13,7 @@
 #include "mavros_msgs/msg/state.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "nav_msgs/msg/odometry.hpp"
+#include "nav_msgs/msg/path.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2/utils.h"
@@ -23,10 +24,10 @@
 #include <unsupported/Eigen/Splines>
 
 // construtor da classe
-class RCControl : public rclcpp::Node
+class RCControlSpline : public rclcpp::Node
 {
 public:
-    RCControl();
+    RCControlSpline();
 
 private:
     bool connected_{};
@@ -49,6 +50,7 @@ private:
 
     // Publishers
     rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
 
     // Services
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr mavros_arm_client_;
@@ -63,7 +65,8 @@ private:
     bool set_mode(const std::string & mode);
     uint16_t map_pwm(float value, bool reverse, float threshold);
     void publish_rc(float forward, float lateral, float depth, float yaw);
-    void follow_wp();
+    void follow_spline_curve();
+    void publish_path();
 
     struct waypoint
     {
@@ -76,6 +79,10 @@ private:
     std::vector<waypoint> wp_;
     double gain_;
     size_t index_wp_;
+
+    void generate_trajectory();
+    std::vector<waypoint> trajectory_;
+    size_t trajectory_index_;
 
     static constexpr double PI = 3.14159265358979323846;
 
@@ -103,4 +110,4 @@ private:
     double origin_z_;
 };
 
-#endif // RC_CONTROL_HPP
+#endif // RC_CONTROL_SPLINE_HPP

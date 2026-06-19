@@ -17,10 +17,12 @@ find_package(mavros_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 include_directories(include)
 
 add_executable(rc_control src/rc_control.cpp)
+add_executable(rc_control_spline src/rc_control_spline.cpp)
 
 ament_target_dependencies(rc_control 
 rclcpp
@@ -30,9 +32,21 @@ geometry_msgs
 nav_msgs
 nav_msgs
 tf2_geometry_msgs
+Eigen3
 )
 
-install(TARGETS rc_control 
+ament_target_dependencies(rc_control_spline
+rclcpp
+sensor_msgs
+mavros_msgs
+geometry_msgs
+nav_msgs
+nav_msgs
+tf2_geometry_msgs
+Eigen3
+)
+
+install(TARGETS rc_control rc_control_spline
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/
