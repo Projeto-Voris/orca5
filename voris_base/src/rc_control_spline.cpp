@@ -29,7 +29,6 @@ RCControlSpline::RCControlSpline() : Node("rc_control_spline")
     //wp_ = {{0.0, 0.0, -2.0}, {1.0, 0.0, -2.0}, {2.0, 0.0, -2.0}, {3.0, 0.0, -2.0}, {4.0, 1.0,-2.0}, {3.0, 2.0, -2.0}, {2.0, 1.0, -2.0},{1.5, 0.0, -2.0}, {1.0, 0.0, -2.0}, {0.0, 0.0, 0.0}};
     // Trajetória circular: espiral
     wp_ = {{0.0, 0.0, -4.0}, {1.0,0.0,-4.0}, {2.0, 0.0, -4.0}, {3.0, 0.0, -4.0}, {4.0, 1.0,-4.0}, {3.0, 2.0, -4.0}, {2.0, 1.0, -4.0}, {3.0,0.0,-3.0},{4.0,1.0,-3.0},{3.0,2.0,-3.0}, {2.0,1.0,-3.0},{3.0, 0.0, -2.0}, {4.0,1.0,-2.0}, {3.0,2.0,-2.0}, {1.0, 1.0,0.0}, {0.0,0.0,0.0}};
-    generate_trajectory();
     trajectory_index_ = 0;
 }
 
@@ -57,6 +56,8 @@ void RCControlSpline::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & ms
         origin_z_ = current_pose_.pose.position.z;
 
         set_origin_ = true;
+        generate_trajectory();
+        publish_path();
 
         RCLCPP_INFO_ONCE(this->get_logger(), "origin_x:%4f | origin_y:%4f | origin_z:%4f", origin_x_, origin_y_,origin_z_);
     }
@@ -191,6 +192,44 @@ void RCControlSpline::generate_trajectory()
     RCLCPP_INFO(this->get_logger(),"Generated trajectory with %ld points",trajectory_.size());
 }
 
+void RCControlSpline::deltaCartesianPoints(){
+    // Armazena waypoints como deslocamento ao invés de coordenas absolutas
+    // Dizer Ex.: "vá 4 metros para frente" ao invés de "vá para o ponto (4, 0)"
+    delta_trajectory_.clear();
+    for (size_t i = 0; i < trajectory_.size(); ++i)
+    {
+        DeltaWaypoint d;
+        if (i == 0)
+        {
+            //primeiro ponto (ponto inicial)
+            d.dx = trajectory_[0].x;
+            d.dy = trajectory_[0].y;
+            d.dz = trajectory_[0].z;
+        }
+        else 
+        {
+            d.dx = trajectory_[i].x - trajectory_[i-1].x;
+            d.dy = trajectory_[i].y - trajectory_[i-1].y;
+            d.dz = trajectory_[i].z - trajectory_[i-1].z;
+        }
+        delta_trajectory_.push_back(d);
+        trajectory_.clear();
+
+        double x = origin_x_;
+        double y = origin_y_;
+        double z = origin_z_;
+
+        for (const auto &d : delta_trajectory_)
+        {
+            x += d.dx;
+            y += d.dy;
+            z += d.dz;
+
+            trajectory_.push_back({x,y,z});
+        }
+    }
+}
+
 void RCControlSpline::follow_spline_curve()
 {
     if (trajectory_index_>= trajectory_.size()) {
@@ -219,13 +258,13 @@ void RCControlSpline::follow_spline_curve()
         RCLCPP_ERROR(this->get_logger(), "Trajectory is empty");
         return;
     }
-    
+
     auto target = trajectory_[trajectory_index_];
 
     // inicio onde o robô começa
-    double current_x = current_pose_.pose.position.x - origin_x_;
-    double current_y = current_pose_.pose.position.y - origin_y_;
-    double current_z = current_pose_.pose.position.z - origin_z_;
+    double current_x = current_pose_.pose.position.x;
+    double current_y = current_pose_.pose.position.y;
+    double current_z = current_pose_.pose.position.z;
 
     double error_x = target.x - current_x;
     double error_y = target.y - current_y;
@@ -241,8 +280,6 @@ void RCControlSpline::follow_spline_curve()
 
     double distance = std::sqrt(error_x*error_x + error_y*error_y);
     float threshold = 0.8;
-
-    publish_path();
 
     if (distance < threshold)
     {

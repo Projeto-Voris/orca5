@@ -22,12 +22,14 @@
 #include <tf2_ros/buffer.h>
 #include <Eigen/Dense>
 #include <unsupported/Eigen/Splines>
+#include <csignal>
 
 // construtor da classe
 class RCControlSpline : public rclcpp::Node
 {
 public:
     RCControlSpline();
+    bool disarm();
 
 private:
     bool connected_{};
@@ -61,7 +63,6 @@ private:
 
     // functions
     bool set_arm(bool arm);
-    bool disarm();
     bool set_mode(const std::string & mode);
     uint16_t map_pwm(float value, bool reverse, float threshold);
     void publish_rc(float forward, float lateral, float depth, float yaw);
@@ -108,6 +109,17 @@ private:
     double origin_x_;
     double origin_y_;
     double origin_z_;
+
+    // Criar um vetor com deltas, para aramzenar o incremento dos pontos da trajetória
+    struct DeltaWaypoint
+    {
+        double dx;
+        double dy;
+        double dz;
+    };
+
+    std::vector<DeltaWaypoint> delta_trajectory_;
+    void deltaCartesianPoints();
 };
 
 #endif // RC_CONTROL_SPLINE_HPP
