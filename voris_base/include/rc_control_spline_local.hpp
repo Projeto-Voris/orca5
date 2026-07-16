@@ -1,5 +1,5 @@
-#ifndef RC_CONTROL_SPLINE_HPP
-#define RC_CONTROL_SPLINE_HPP
+#ifndef RC_CONTROL_SPLINE_LOCAL_HPP
+#define RC_CONTROL_SPLINE_LOCAL_HPP
 
 #include <memory>
 #include <string>
@@ -25,13 +25,13 @@
 #include <csignal>
 
 // construtor da classe
-class RCControlSpline : public rclcpp::Node
+class RCControlSplineLocal : public rclcpp::Node
 {
 public:
-    RCControlSpline();
+    RCControlSplineLocal();
     bool disarm();
 
-    static std::shared_ptr<RCControlSpline> instance;
+    static std::shared_ptr<RCControlSplineLocal> instance;
     static void sigintHandler(int);
 
 private:
@@ -50,7 +50,7 @@ private:
     // Current robot state
     geometry_msgs::msg::PoseStamped current_pose_;
     geometry_msgs::msg::Twist current_vel_;
-    geometry_msgs::msg::PoseStamped pose_odom_;
+    geometry_msgs::msg::PoseStamped pose_base_;
 
     // Publishers
     rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
@@ -82,32 +82,24 @@ private:
     std::vector<waypoint> wp_;
     double gain_;
     size_t index_wp_;
-    waypoint points_relative;
 
-    void generateTrajectory();
-    void generateWaypoints();
+    void generate_trajectory();
     std::vector<waypoint> trajectory_;
-    std::vector<waypoint> trajectory_transformed_;
     size_t trajectory_index_;
 
-    enum class TrajectoryType
+    static constexpr double PI = 3.14159265358979323846;
+
+    // Create a variable to store the current behavior mode of the sub
+    enum class controlState
     {
-        SQUARE,
-        CIRCLE,
-        SPIRAL
+        ROTATE,
+        MOVE
     };
 
-    struct TrajectoryParams
-    {
-        double delta = 0.2;      // distância entre pontos
-        double side = 2.0;       // quadrado
-        double radius = 1.0;     // círculo/espiral
-        double dz = -1.0;         // espiral
-        int turns = 4;           // espiral
-    };
-
-    TrajectoryType trajectory_type_ = TrajectoryType::CIRCLE;
-    TrajectoryParams trajectory_params_;
+    // initial state
+    controlState state_ = controlState::ROTATE;
+    // define um estado inicial onde a rotação é positiva
+    double rotate_direction_ = 1.0;
 
     rclcpp::TimerBase::SharedPtr timer_tf_;
     std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
@@ -120,10 +112,18 @@ private:
     double origin_y_;
     double origin_z_;
 
-    tf2::Transform T_start_map_;
-    tf2::Transform T_map_start;
-    tf2::Quaternion lookAtTheDuct(size_t index, const geometry_msgs::msg::Point& robot_position);
-    std::vector<tf2::Quaternion> trajectory_orientation_;
+    // Criar um vetor com deltas, para aramzenar o incremento dos pontos da trajetória
+    struct DeltaWaypoint
+    {
+        double dx;
+        double dy;
+        double dz;
+    };
+
+    std::vector<DeltaWaypoint> delta_trajectory_;
+    void deltaCartesianPoints();
+    void buildTrajectory();
+    void transform_map_to_base();
 };
 
-#endif // RC_CONTROL_SPLINE_HPP
+#endif // RC_CONTROL_SPLINE_LOCAL_HPP

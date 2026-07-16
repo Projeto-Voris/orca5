@@ -23,13 +23,17 @@ RCControlSpline::RCControlSpline() : Node("rc_control_spline")
     gain_ = 0.5;
 
     index_wp_ = 0;
+    // wp_ = {{0.8, -0.8, 0.0},{0.8, 0.8, 0.0}, {-0.8, 0.8, 0.0}, {-0.8, -0.8, 0.0}, {0.8, -0.8, 0.0}};
+    // wp_ = {{0.0,0.0,0.0}, {0.5,0.5,0.0}, {1.0,0.25,0.0}, {-0.5,-0.5,0.0}, {0.0,0.0,0.0}};
     // Trajetória linear
     //wp_ = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {2.0, 0.0, 0.0}, {3.0, 0.0, 0.0},{3.0, 2.5, 0.0}, {2.0, 2.5, 0.0}, {1.0,2.5,0.0},{0.0, 2.5, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}};
     // Trajetória circular: 1 volta
     //wp_ = {{0.0, 0.0, -2.0}, {1.0, 0.0, -2.0}, {2.0, 0.0, -2.0}, {3.0, 0.0, -2.0}, {4.0, 1.0,-2.0}, {3.0, 2.0, -2.0}, {2.0, 1.0, -2.0},{1.5, 0.0, -2.0}, {1.0, 0.0, -2.0}, {0.0, 0.0, 0.0}};
     // Trajetória circular: espiral
-    wp_ = {{0.0, 0.0, -4.0}, {1.0,0.0,-4.0}, {2.0, 0.0, -4.0}, {3.0, 0.0, -4.0}, {4.0, 1.0,-4.0}, {3.0, 2.0, -4.0}, {2.0, 1.0, -4.0}, {3.0,0.0,-3.0},{4.0,1.0,-3.0},{3.0,2.0,-3.0}, {2.0,1.0,-3.0},{3.0, 0.0, -2.0}, {4.0,1.0,-2.0}, {3.0,2.0,-2.0}, {1.0, 1.0,0.0}, {0.0,0.0,0.0}};
+    //wp_ = {{0.0, 0.0, -4.0}, {1.0,0.0,-4.0}, {2.0, 0.0, -4.0}, {3.0, 0.0, -4.0}, {4.0, 1.0,-4.0}, {3.0, 2.0, -4.0}, {2.0, 1.0, -4.0}, {3.0,0.0,-3.0},{4.0,1.0,-3.0},{3.0,2.0,-3.0}, {2.0,1.0,-3.0},{3.0, 0.0, -2.0}, {4.0,1.0,-2.0}, {3.0,2.0,-2.0}, {1.0, 1.0,0.0}, {0.0,0.0,0.0}};
     trajectory_index_ = 0;
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 }
 
 void RCControlSpline::state_cb(const mavros_msgs::msg::State::ConstSharedPtr & msg)
@@ -55,9 +59,17 @@ void RCControlSpline::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & ms
         origin_y_ = current_pose_.pose.position.y;
         origin_z_ = current_pose_.pose.position.z;
 
+        T_map_start.setOrigin(tf2::Vector3(origin_x_,origin_y_,origin_z_));
+        tf2::Quaternion q;
+        tf2::fromMsg(current_pose_.pose.orientation, q);
+        T_map_start.setRotation(q);
+        T_start_map_ = T_map_start.inverse();
+
         set_origin_ = true;
-        generate_trajectory();
-        publish_path();
+        trajectory_type_ = TrajectoryType::SPIRAL;
+        generateTrajectory();
+
+        RCLCPP_INFO(get_logger(),"Origin: %.2f %.2f %.2f",T_start_map_.getOrigin().x(),T_start_map_.getOrigin().y(),T_start_map_.getOrigin().z());
 
         RCLCPP_INFO_ONCE(this->get_logger(), "origin_x:%4f | origin_y:%4f | origin_z:%4f", origin_x_, origin_y_,origin_z_);
     }
@@ -137,7 +149,7 @@ void RCControlSpline::publish_path()
     nav_msgs::msg::Path path;
     path.header.stamp = this->now();
     path.header.frame_id = "map";
-    for (const auto& p : trajectory_)
+    for (const auto& p : trajectory_transformed_)
     {
         geometry_msgs::msg::PoseStamped pose;
         pose.header = path.header;
@@ -150,8 +162,63 @@ void RCControlSpline::publish_path()
     path_pub_->publish(path);
 }
 
-void RCControlSpline::generate_trajectory()
+void RCControlSpline::generateWaypoints()
 {
+    // Função que gera os waypoints
+    wp_.clear();
+    switch (trajectory_type_)
+    {
+        case TrajectoryType::SQUARE:
+        {
+            double L = trajectory_params_.side;
+            double d = trajectory_params_.delta;
+            double h = L/2;
+            for (double x=0; x<=h; x+=d)
+                wp_.push_back({x,-h,0});
+            for (double y=-h+d; y<=h; y+=d)
+                wp_.push_back({h,y,0});
+            for (double x=h-d; x>=-h; x-=d)
+                wp_.push_back({x,h,0});
+            for (double y=h-d; y>=-h; y-=d)
+                wp_.push_back({-h,y,0});
+            for (double x=-h+d; x<0; x+=d)
+                wp_.push_back({x,-h,0});
+
+            break;
+        }   
+        case TrajectoryType::CIRCLE:
+        {
+            double r = trajectory_params_.radius;
+            int N = std::ceil((2*M_PI*r)/trajectory_params_.delta);
+            for (int i=0; i<N; i++)
+            {
+                double theta = 2*M_PI*i/N;
+                wp_.push_back({r-r*cos(theta), r*sin(theta), 0.0});
+            }
+            break;
+        }
+        case TrajectoryType::SPIRAL:
+        {
+            double r = trajectory_params_.radius;
+            double dz = trajectory_params_.dz;
+            int turns = trajectory_params_.turns;
+
+            double length = turns*2*M_PI*r;
+            int N = std::ceil(length/trajectory_params_.delta);
+
+            for (int i=0; i<=N; i++)
+            {
+                double theta = turns*2*M_PI*i/N;
+                wp_.push_back({r - r*cos(theta), r*sin(theta), dz*theta/(2*M_PI)});
+            }
+            break;
+        }
+    }
+}
+
+void RCControlSpline::generateTrajectory()
+{
+    generateWaypoints();
     // Gera uma trajetória curva 3D, resultado conjunto de pontos
     if (wp_.size() < 2)
     {
@@ -173,7 +240,7 @@ void RCControlSpline::generate_trajectory()
     trajectory_.clear();
 
     // Transformar a trajetória obtida em pontos para seguir
-    constexpr int sample = 500; // Defini o número de pontos que será obtido
+    constexpr int sample = 100; // Defini o número de pontos que será obtido
     for (int i = 0; i <= sample; i++)
     {
         // Normalização para u entre 0 e 1, spline eigen espera u entre [0,1], avalia onde é o ponto
@@ -189,50 +256,86 @@ void RCControlSpline::generate_trajectory()
         trajectory_.push_back(pt);
     }
     trajectory_index_ = 0;
+    // Transforma/translada a trajetória para o ponto de ínicio
+    trajectory_transformed_.clear();
+
+    for (const auto &p : trajectory_)
+    {
+        tf2::Vector3 pt(p.x, p.y, p.z);
+
+        tf2::Vector3 pt_map = T_map_start * pt;
+
+        trajectory_transformed_.push_back({
+            pt_map.x(),
+            pt_map.y(),
+            pt_map.z()
+
+        });
+    }
+    publish_path();
     RCLCPP_INFO(this->get_logger(),"Generated trajectory with %ld points",trajectory_.size());
 }
 
-void RCControlSpline::deltaCartesianPoints(){
-    // Armazena waypoints como deslocamento ao invés de coordenas absolutas
-    // Dizer Ex.: "vá 4 metros para frente" ao invés de "vá para o ponto (4, 0)"
-    delta_trajectory_.clear();
-    for (size_t i = 0; i < trajectory_.size(); ++i)
+tf2::Quaternion RCControlSpline::lookAtTheDuct(size_t index, const geometry_msgs::msg::Point& robot_position)
+{
+    // Processo Gram-Schmidt para mudar orietação dos vetores, de forma manter o eixo x olhando para o centro da trajetória (duto)
+
+    if (index == 0) {index = 1;}
+    if (index >= trajectory_transformed_.size()-1) { index = trajectory_transformed_.size()-2;}
+
+    Eigen::Vector3d center(0,0,0);
+    // Calcula o centro da trajetória
+    for (auto &p : trajectory_transformed_)
     {
-        DeltaWaypoint d;
-        if (i == 0)
-        {
-            //primeiro ponto (ponto inicial)
-            d.dx = trajectory_[0].x;
-            d.dy = trajectory_[0].y;
-            d.dz = trajectory_[0].z;
-        }
-        else 
-        {
-            d.dx = trajectory_[i].x - trajectory_[i-1].x;
-            d.dy = trajectory_[i].y - trajectory_[i-1].y;
-            d.dz = trajectory_[i].z - trajectory_[i-1].z;
-        }
-        delta_trajectory_.push_back(d);
-        trajectory_.clear();
-
-        double x = origin_x_;
-        double y = origin_y_;
-        double z = origin_z_;
-
-        for (const auto &d : delta_trajectory_)
-        {
-            x += d.dx;
-            y += d.dy;
-            z += d.dz;
-
-            trajectory_.push_back({x,y,z});
-        }
+        center.x() += p.x;
+        center.y() += p.y;
     }
+    center.x() /= trajectory_transformed_.size();
+    center.y() /= trajectory_transformed_.size();
+
+    // pp - ponto anterior ao ponto atual; p0 - ponto atual; p1 - proximo ponto do ponto atual.
+    Eigen::Vector3d pp(trajectory_transformed_[index-1].x, trajectory_transformed_[index-1].y, trajectory_transformed_[index-1].z);
+    Eigen::Vector3d p0(trajectory_transformed_[index].x, trajectory_transformed_[index].y, trajectory_transformed_[index].z);
+    Eigen::Vector3d p1(trajectory_transformed_[index+1].x, trajectory_transformed_[index+1].y, trajectory_transformed_[index+1].z);
+
+    // Vetor que correponde a posição atual do robô
+    Eigen::Vector3d robot(robot_position.x, robot_position.y, robot_position.z);
+
+    // Calculo do vetor que aponta para o duto
+    Eigen::Vector3d duct_axis(0.0,0.0,1.0); // representa o eixo do duto
+    Eigen::Vector3d duct_center(center.x(), center.y(), robot.z()); // vetor que aponta para o centro da trajetória
+
+    // u is a vector tantent to the curve 
+    Eigen::Vector3d u = (p1-p0).normalized();
+
+    Eigen::Vector3d x_axis = (duct_center - p0).normalized();
+    // Aplicação do processo Gram-Schmidt para ortonormalizar os vetores
+    Eigen::Vector3d y_axis = u - u.dot(x_axis)*x_axis;
+    if (y_axis.norm() < 1e-3) { y_axis = duct_axis.cross(x_axis);}
+    y_axis.normalize();
+    Eigen::Vector3d z_axis = x_axis.cross(y_axis).normalized();
+    if (z_axis.z()<0) 
+    {
+        z_axis = -z_axis;
+        y_axis = -y_axis;
+    }
+
+    // calculete the matrix of rotate
+    Eigen::Matrix3d R;
+    R.col(0) = x_axis; 
+    R.col(1) = y_axis;
+    R.col(2) = z_axis;
+
+    // Convert to quartenion
+    Eigen::Quaterniond q(R);
+    tf2::Quaternion q_tf;
+    q_tf.setValue(q.x(), q.y(), q.z(), q.w());
+    return q_tf;
 }
 
 void RCControlSpline::follow_spline_curve()
 {
-    if (trajectory_index_>= trajectory_.size()) {
+    if (trajectory_index_>= trajectory_transformed_.size()) {
         RCLCPP_INFO_ONCE(get_logger(), "Trajectory completed");
         disarm();
         publish_rc(0.0, 0.0, 0.0, 0.0);
@@ -253,32 +356,52 @@ void RCControlSpline::follow_spline_curve()
         }
     }
 
-    if (trajectory_.empty())
+    if (trajectory_transformed_.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Trajectory is empty");
         return;
     }
+    waypoint target = trajectory_transformed_[trajectory_index_];
+    tf2::Quaternion q_desired = lookAtTheDuct(trajectory_index_, current_pose_.pose.position);
 
-    auto target = trajectory_[trajectory_index_];
-
-    // inicio onde o robô começa
+    // Pose atual
     double current_x = current_pose_.pose.position.x;
     double current_y = current_pose_.pose.position.y;
     double current_z = current_pose_.pose.position.z;
+    double current_yaw = tf2::getYaw(current_pose_.pose.orientation);
 
     double error_x = target.x - current_x;
     double error_y = target.y - current_y;
     double error_z = target.z - current_z;
 
-    // Calcular a rotação em yaw com base nos waypoints
-    double target_yaw = atan2(error_y,error_x);
-    double current_yaw = tf2::getYaw(current_pose_.pose.orientation);
-    double error_yaw = std::atan2(std::sin(target_yaw - current_yaw), std::cos(target_yaw - current_yaw));
+    // Calculo da orientação
+    tf2::Quaternion q_current;
+    tf2::fromMsg(current_pose_.pose.orientation, q_current);
+    // erro de orientação desejada - atual
+    tf2::Quaternion q_error = q_desired*q_current.inverse();
+    q_error.normalize();
 
-    double yaw_cmd = 0.8*error_yaw;
-    yaw_cmd = std::clamp(yaw_cmd, -0.8, 0.8);
+    // Extrair o ângulo yaw para o erro do ângulo em torno de z
+    tf2::Matrix3x3 m(q_error);
+    double roll,pitch,yaw;
+    m.getRPY(roll,pitch,yaw);
 
-    double distance = std::sqrt(error_x*error_x + error_y*error_y);
+    // Rotação no robô
+    double error_forward = std::cos(current_yaw)*error_x + std::sin(current_yaw)*error_y;
+    double error_lateral = -std::sin(current_yaw)*error_x + std::cos(current_yaw)*error_y;
+
+    double yaw_cmd = 0.3*yaw;
+    double forward_cmd = 0.3*error_forward;
+    double lateral_cmd = 0.3*error_lateral;
+    double depth_cmd = 0.3*error_z;
+
+    forward_cmd = std::clamp(forward_cmd,-0.3,0.3);
+    lateral_cmd = std::clamp(lateral_cmd,-0.3,0.3);
+    depth_cmd = std::clamp(depth_cmd,-0.3,0.3);
+    yaw_cmd = std::clamp(yaw_cmd, -0.3, 0.3);
+
+    // distância eclidiana 
+    double distance = std::hypot(error_x,error_y);
     float threshold = 0.8;
 
     if (distance < threshold)
@@ -286,17 +409,25 @@ void RCControlSpline::follow_spline_curve()
         trajectory_index_++;
     }
 
-    // Calcular a velocidade do camando para frente
-    double accel_f = 0.8; // reduzir velocidade
-    double forward_cmd = accel_f*distance;
-    forward_cmd = std::clamp(forward_cmd, 0.0, 0.3);
-    publish_rc(forward_cmd, 0.0, error_z, yaw_cmd);
+    publish_rc(forward_cmd, lateral_cmd, depth_cmd, yaw_cmd);
+    publish_path();
+}
+
+std::shared_ptr<RCControlSpline> RCControlSpline::instance = nullptr;
+void RCControlSpline::sigintHandler(int)
+{
+    if (instance){
+        instance->disarm();
+    }
+    rclcpp::shutdown();
 }
 
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<RCControlSpline>(); 
+    RCControlSpline::instance = node;
+    std::signal(SIGINT, RCControlSpline::sigintHandler);
     rclcpp::spin(node); 
     rclcpp::shutdown();
     return 0;

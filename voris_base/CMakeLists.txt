@@ -23,6 +23,7 @@ include_directories(include)
 
 add_executable(rc_control src/rc_control.cpp)
 add_executable(rc_control_spline src/rc_control_spline.cpp)
+add_executable(rc_control_spline_local src/rc_control_spline_local.cpp)
 
 ament_target_dependencies(rc_control 
 rclcpp
@@ -46,7 +47,18 @@ tf2_geometry_msgs
 Eigen3
 )
 
-install(TARGETS rc_control rc_control_spline
+ament_target_dependencies(rc_control_spline_local
+rclcpp
+sensor_msgs
+mavros_msgs
+geometry_msgs
+nav_msgs
+nav_msgs
+tf2_geometry_msgs
+Eigen3
+)
+
+install(TARGETS rc_control rc_control_spline rc_control_spline_local
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/
