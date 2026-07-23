@@ -24,6 +24,8 @@ include_directories(include)
 add_executable(rc_control src/rc_control.cpp)
 add_executable(rc_control_spline src/rc_control_spline.cpp)
 add_executable(rc_control_spline_local src/rc_control_spline_local.cpp)
+add_executable(path_generator src/path_generator.cpp)
+add_executable(trajectory_controller src/trajectory_controller.cpp)
 
 ament_target_dependencies(rc_control 
 rclcpp
@@ -58,11 +60,36 @@ tf2_geometry_msgs
 Eigen3
 )
 
-install(TARGETS rc_control rc_control_spline rc_control_spline_local
+ament_target_dependencies(path_generator
+rclcpp
+sensor_msgs
+mavros_msgs
+geometry_msgs
+nav_msgs
+nav_msgs
+tf2_geometry_msgs
+Eigen3
+)
+
+ament_target_dependencies(trajectory_controller
+rclcpp
+sensor_msgs
+mavros_msgs
+geometry_msgs
+nav_msgs
+nav_msgs
+tf2_geometry_msgs
+Eigen3
+)
+
+install(TARGETS rc_control rc_control_spline rc_control_spline_local path_generator trajectory_controller
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY include/
 DESTINATION include)
+
+install(DIRECTORY launch
+ DESTINATION share/${PROJECT_NAME}/)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

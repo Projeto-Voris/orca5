@@ -1,5 +1,5 @@
-#ifndef RC_CONTROL_SPLINE_HPP
-#define RC_CONTROL_SPLINE_HPP
+#ifndef TRAJECTORY_CONTROLLER_HPP
+#define TRAJECTORY_CONTROLLER_HPP
 
 #include <memory>
 #include <string>
@@ -24,50 +24,72 @@
 #include <unsupported/Eigen/Splines>
 #include <csignal>
 
-class RCControlSpline : public rclcpp::Node
+class TrajectoryController : public rclcpp::Node
 {
 public:
-    RCControlSpline();
+    TrajectoryController();
     bool disarm();
 
-    static std::shared_ptr<RCControlSpline> instance;
+    static std::shared_ptr<TrajectoryController> instance;
     static void sigintHandler(int);
 
 private:
     bool connected_{};
     bool armed_{};
+    bool set_origin_ = false;
     std::string mode_ = "";
+    double gain_;
 
-    // Subscribers 
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
     void odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & msg);
 
     rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub_;
     void state_cb(const mavros_msgs::msg::State::ConstSharedPtr & msg);
 
+    rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
+    void transformPath(const nav_msgs::msg::Path::ConstSharedPtr & msg);
+
     // Current robot state
     geometry_msgs::msg::PoseStamped current_pose_;
     geometry_msgs::msg::Twist current_vel_;
     geometry_msgs::msg::PoseStamped pose_odom_;
 
-    // Publishers
     rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
 
-    // Services
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr mavros_arm_client_;
     rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mavros_set_mode_client_;   
 
-    // timer
     rclcpp::TimerBase::SharedPtr timer_;
 
-    // functions
     bool set_arm(bool arm);
     bool set_mode(const std::string & mode);
     uint16_t map_pwm(float value, bool reverse, float threshold);
     void publish_rc(float forward, float lateral, float depth, float yaw);
-    void follow_spline_curve();
-    void publish_path();
+    void publishPath();
+    void pathFollower();
+
+    struct DuctPosition
+    {
+        double pdx{3.0};
+        double pdy{1.5};
+        double pdz{-1.0};
+    };
+    DuctPosition duct_position_;
+
+    rclcpp::TimerBase::SharedPtr timer_tf_;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+    tf2::Transform T_start_map_;
+    tf2::Transform T_map_start;
+    tf2::Quaternion lookAtTheDuct(const geometry_msgs::msg::Point& robot_position);
+    std::vector<tf2::Quaternion> trajectory_orientation_;
+
+    double origin_x_;
+    double origin_y_;
+    double origin_z_;
 
     struct waypoint
     {
@@ -76,59 +98,12 @@ private:
         double z;
     };
 
-    // Definitions
-    std::vector<waypoint> wp_;
-    double gain_;
-    size_t index_wp_;
-    waypoint points_relative;
-
-    void generateTrajectory();
-    void generateWaypoints();
-    std::vector<waypoint> trajectory_;
-    std::vector<waypoint> trajectory_transformed_;
+    double k_depth;
+    double k_yaw;
+    
+    std::vector<waypoint> path_transformed_;
     size_t trajectory_index_;
-
-    enum class TrajectoryType
-    {
-        SQUARE,
-        CIRCLE,
-        SPIRAL
-    };
-
-    struct TrajectoryParams
-    {
-        double delta = 0.2;      // distance between points
-        double side = 2.0;       // square
-        double radius = 1.0;     // circle/spiral
-        double dz = -1.0;         // spiral steps in z
-        int turns = 4;           // spiral turns in z
-    };
-
-    struct DuctPosition
-    {
-        double pdx = 3.0;
-        double pdy = 1.5;
-        double pdz = -1.0;
-    };
-
-    TrajectoryType trajectory_type_ = TrajectoryType::CIRCLE;
-    TrajectoryParams trajectory_params_;
-    DuctPosition duct_position_;
-
-    rclcpp::TimerBase::SharedPtr timer_tf_;
-    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
-    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
-
-    bool set_origin_ = false;
-    double origin_x_;
-    double origin_y_;
-    double origin_z_;
-
-    tf2::Transform T_start_map_;
-    tf2::Transform T_map_start;
-    tf2::Quaternion lookAtTheDuct(size_t index, const geometry_msgs::msg::Point& robot_position);
-    std::vector<tf2::Quaternion> trajectory_orientation_;
+    std::string frame_id_;
 };
 
-#endif // RC_CONTROL_SPLINE_HPP
+#endif // TRAJECTORY_CONTROLLER_HPP

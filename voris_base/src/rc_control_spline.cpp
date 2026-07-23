@@ -22,15 +22,6 @@ RCControlSpline::RCControlSpline() : Node("rc_control_spline")
 
     gain_ = 0.5;
 
-    index_wp_ = 0;
-    // wp_ = {{0.8, -0.8, 0.0},{0.8, 0.8, 0.0}, {-0.8, 0.8, 0.0}, {-0.8, -0.8, 0.0}, {0.8, -0.8, 0.0}};
-    // wp_ = {{0.0,0.0,0.0}, {0.5,0.5,0.0}, {1.0,0.25,0.0}, {-0.5,-0.5,0.0}, {0.0,0.0,0.0}};
-    // Trajetória linear
-    //wp_ = {{0.0, 0.0, 0.0},{1.0, 0.0, 0.0}, {2.0, 0.0, 0.0}, {3.0, 0.0, 0.0},{3.0, 2.5, 0.0}, {2.0, 2.5, 0.0}, {1.0,2.5,0.0},{0.0, 2.5, 0.0}, {0.0, 1.0, 0.0}, {0.0, 0.0, 0.0}};
-    // Trajetória circular: 1 volta
-    //wp_ = {{0.0, 0.0, -2.0}, {1.0, 0.0, -2.0}, {2.0, 0.0, -2.0}, {3.0, 0.0, -2.0}, {4.0, 1.0,-2.0}, {3.0, 2.0, -2.0}, {2.0, 1.0, -2.0},{1.5, 0.0, -2.0}, {1.0, 0.0, -2.0}, {0.0, 0.0, 0.0}};
-    // Trajetória circular: espiral
-    //wp_ = {{0.0, 0.0, -4.0}, {1.0,0.0,-4.0}, {2.0, 0.0, -4.0}, {3.0, 0.0, -4.0}, {4.0, 1.0,-4.0}, {3.0, 2.0, -4.0}, {2.0, 1.0, -4.0}, {3.0,0.0,-3.0},{4.0,1.0,-3.0},{3.0,2.0,-3.0}, {2.0,1.0,-3.0},{3.0, 0.0, -2.0}, {4.0,1.0,-2.0}, {3.0,2.0,-2.0}, {1.0, 1.0,0.0}, {0.0,0.0,0.0}};
     trajectory_index_ = 0;
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -48,7 +39,6 @@ void RCControlSpline::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & ms
     // position (position and orientation)
     current_pose_.header = msg->header;
     current_pose_.pose = msg->pose.pose;
-    // RCLCPP_INFO(this->get_logger(), "x:%4f | y:%4f", current_pose_.pose.position.x, current_pose_.pose.position.y);
 
     // velocity (linear and angular)
     current_vel_ = msg->twist.twist;
@@ -59,6 +49,7 @@ void RCControlSpline::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & ms
         origin_y_ = current_pose_.pose.position.y;
         origin_z_ = current_pose_.pose.position.z;
 
+        // Transformation to the start position
         T_map_start.setOrigin(tf2::Vector3(origin_x_,origin_y_,origin_z_));
         tf2::Quaternion q;
         tf2::fromMsg(current_pose_.pose.orientation, q);
@@ -66,7 +57,7 @@ void RCControlSpline::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & ms
         T_start_map_ = T_map_start.inverse();
 
         set_origin_ = true;
-        trajectory_type_ = TrajectoryType::SPIRAL;
+        trajectory_type_ = TrajectoryType::SQUARE;
         generateTrajectory();
 
         RCLCPP_INFO(get_logger(),"Origin: %.2f %.2f %.2f",T_start_map_.getOrigin().x(),T_start_map_.getOrigin().y(),T_start_map_.getOrigin().z());
@@ -170,6 +161,7 @@ void RCControlSpline::generateWaypoints()
     {
         case TrajectoryType::SQUARE:
         {
+            // Generate a square trajectory in the middle of the under side
             double L = trajectory_params_.side;
             double d = trajectory_params_.delta;
             double h = L/2;
@@ -188,6 +180,7 @@ void RCControlSpline::generateWaypoints()
         }   
         case TrajectoryType::CIRCLE:
         {
+            // Generate a circle trajectory with the center in (r,0)
             double r = trajectory_params_.radius;
             int N = std::ceil((2*M_PI*r)/trajectory_params_.delta);
             for (int i=0; i<N; i++)
@@ -199,6 +192,7 @@ void RCControlSpline::generateWaypoints()
         }
         case TrajectoryType::SPIRAL:
         {
+            // Generate a spiral trajectory with the center in (r,0)
             double r = trajectory_params_.radius;
             double dz = trajectory_params_.dz;
             int turns = trajectory_params_.turns;
@@ -219,14 +213,13 @@ void RCControlSpline::generateWaypoints()
 void RCControlSpline::generateTrajectory()
 {
     generateWaypoints();
-    // Gera uma trajetória curva 3D, resultado conjunto de pontos
     if (wp_.size() < 2)
     {
-        // Para geração de uma curva é necessário nó mínimo dois pontos
+        // The number of waypoints must be bigger than two points
         RCLCPP_INFO(this->get_logger(), "Need at least 2 waypoints");
     }
 
-    // Matriz de pontos 3 x numeros de waypoints para calculo da spline
+    // Generate a matrix of points 3 x number of waypoints
     Eigen::MatrixXd points(3, wp_.size());
     for (size_t i = 0; i < wp_.size(); i++)
     {
@@ -235,16 +228,16 @@ void RCControlSpline::generateTrajectory()
         points(2, i) = wp_[i].z;
     }
 
-    // Faz a interpolação da matrix de pontos para obter uma trjatória curva suave
+    // Interpolate the matrix to get a smooth curve 
     auto spline = Eigen::SplineFitting<Eigen::Spline<double, 3>>::Interpolate(points, 3);
     trajectory_.clear();
 
-    // Transformar a trajetória obtida em pontos para seguir
-    constexpr int sample = 100; // Defini o número de pontos que será obtido
+    // Transform the trajectory into points
+    constexpr int sample = 100; // Define the number of point that will be get
     for (int i = 0; i <= sample; i++)
     {
-        // Normalização para u entre 0 e 1, spline eigen espera u entre [0,1], avalia onde é o ponto
-        // u = 0  ponto inicial; u = 1 ponto é final
+        // Normalization to u between 0 and 1, spline eigen wait u between [0,1], evaluate where is the point 
+        // u = 0  initial point; u = 1 final point
         double u = static_cast<double>(i)/static_cast<double>(sample);
         Eigen::Vector3d p = spline(u);
 
@@ -256,7 +249,7 @@ void RCControlSpline::generateTrajectory()
         trajectory_.push_back(pt);
     }
     trajectory_index_ = 0;
-    // Transforma/translada a trajetória para o ponto de ínicio
+    // Transform the trajectory to the initial position
     trajectory_transformed_.clear();
 
     for (const auto &p : trajectory_)
@@ -278,42 +271,33 @@ void RCControlSpline::generateTrajectory()
 
 tf2::Quaternion RCControlSpline::lookAtTheDuct(size_t index, const geometry_msgs::msg::Point& robot_position)
 {
-    // Processo Gram-Schmidt para mudar orietação dos vetores, de forma manter o eixo x olhando para o centro da trajetória (duto)
+    // Process Gram-Schmidt to change the orientation of the vector to keep the x axis toward the duct
 
     if (index == 0) {index = 1;}
     if (index >= trajectory_transformed_.size()-1) { index = trajectory_transformed_.size()-2;}
 
-    Eigen::Vector3d center(0,0,0);
-    // Calcula o centro da trajetória
-    for (auto &p : trajectory_transformed_)
-    {
-        center.x() += p.x;
-        center.y() += p.y;
-    }
-    center.x() /= trajectory_transformed_.size();
-    center.y() /= trajectory_transformed_.size();
-
-    // pp - ponto anterior ao ponto atual; p0 - ponto atual; p1 - proximo ponto do ponto atual.
+    // pp - previous point; p0 - current point; p1 - next point 
     Eigen::Vector3d pp(trajectory_transformed_[index-1].x, trajectory_transformed_[index-1].y, trajectory_transformed_[index-1].z);
     Eigen::Vector3d p0(trajectory_transformed_[index].x, trajectory_transformed_[index].y, trajectory_transformed_[index].z);
     Eigen::Vector3d p1(trajectory_transformed_[index+1].x, trajectory_transformed_[index+1].y, trajectory_transformed_[index+1].z);
+    // Vector of the duct 
+    Eigen::Vector3d pduct(duct_position_.pdx, duct_position_.pdy, duct_position_.pdz);
 
-    // Vetor que correponde a posição atual do robô
+    // Vector of the current pose of the ROV
     Eigen::Vector3d robot(robot_position.x, robot_position.y, robot_position.z);
 
-    // Calculo do vetor que aponta para o duto
-    Eigen::Vector3d duct_axis(0.0,0.0,1.0); // representa o eixo do duto
-    Eigen::Vector3d duct_center(center.x(), center.y(), robot.z()); // vetor que aponta para o centro da trajetória
+    // Vector that point to the duct
+    Eigen::Vector3d duct = (pduct - robot).normalized(); 
+    RCLCPP_INFO_ONCE(this->get_logger(),"Vector: x=%.3f y=%.3f z=%.3f", duct.x(), duct.y(), duct.z());
 
     // u is a vector tantent to the curve 
     Eigen::Vector3d u = (p1-p0).normalized();
 
-    Eigen::Vector3d x_axis = (duct_center - p0).normalized();
-    // Aplicação do processo Gram-Schmidt para ortonormalizar os vetores
+    Eigen::Vector3d x_axis = duct.normalized();
     Eigen::Vector3d y_axis = u - u.dot(x_axis)*x_axis;
-    if (y_axis.norm() < 1e-3) { y_axis = duct_axis.cross(x_axis);}
     y_axis.normalize();
     Eigen::Vector3d z_axis = x_axis.cross(y_axis).normalized();
+    // Ensure that the vector x_axis point to inside of the trajectory
     if (z_axis.z()<0) 
     {
         z_axis = -z_axis;
@@ -364,7 +348,7 @@ void RCControlSpline::follow_spline_curve()
     waypoint target = trajectory_transformed_[trajectory_index_];
     tf2::Quaternion q_desired = lookAtTheDuct(trajectory_index_, current_pose_.pose.position);
 
-    // Pose atual
+    // Current Pose
     double current_x = current_pose_.pose.position.x;
     double current_y = current_pose_.pose.position.y;
     double current_z = current_pose_.pose.position.z;
@@ -374,19 +358,18 @@ void RCControlSpline::follow_spline_curve()
     double error_y = target.y - current_y;
     double error_z = target.z - current_z;
 
-    // Calculo da orientação
+    // calculte the orientation
     tf2::Quaternion q_current;
     tf2::fromMsg(current_pose_.pose.orientation, q_current);
-    // erro de orientação desejada - atual
     tf2::Quaternion q_error = q_desired*q_current.inverse();
     q_error.normalize();
 
-    // Extrair o ângulo yaw para o erro do ângulo em torno de z
+    // Obtain the yaw angle 
     tf2::Matrix3x3 m(q_error);
     double roll,pitch,yaw;
     m.getRPY(roll,pitch,yaw);
 
-    // Rotação no robô
+    // Rotation of the ROV
     double error_forward = std::cos(current_yaw)*error_x + std::sin(current_yaw)*error_y;
     double error_lateral = -std::sin(current_yaw)*error_x + std::cos(current_yaw)*error_y;
 
@@ -400,7 +383,7 @@ void RCControlSpline::follow_spline_curve()
     depth_cmd = std::clamp(depth_cmd,-0.3,0.3);
     yaw_cmd = std::clamp(yaw_cmd, -0.3, 0.3);
 
-    // distância eclidiana 
+    // Euclidean distance
     double distance = std::hypot(error_x,error_y);
     float threshold = 0.8;
 
