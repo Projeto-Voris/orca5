@@ -56,11 +56,8 @@ def generate_launch_description():
         DeclareLaunchArgument('ardusub', default_value='True', description='Launch ArduSUB with SIM_JSON?'),
         DeclareLaunchArgument( 'gzclient', default_value='False', description='Launch Gazebo UI?'),
         DeclareLaunchArgument( 'mavros', default_value='True', description='Launch mavros?'),
+        DeclareLaunchArgument('description', default_value='True', description='Publish robot_description?'),
         DeclareLaunchArgument('rviz', default_value='True', description='Launch rviz?'),
-        DeclareLaunchArgument('passive', default_value='False', description='Launch Passive stereo process'),
-        DeclareLaunchArgument('slam', default_value='True', description='Enable SLAM in passive stereo process?'),
-        DeclareLaunchArgument('disparity', default_value='True', description='Enable disparity in passive stereo process?'),
-        DeclareLaunchArgument('gazebo_bridge_file', default_value=PathJoinSubstitution([FindPackageShare('orca_bringup'), 'cfg', 'gzbridge_config.yaml']), description='Caminho para o arquivo de configuração do Gazebo Bridge'), 
        
        # Launch rviz
         ExecuteProcess(
@@ -105,28 +102,9 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('mavros')),
         ),
 
-        # Node(
-        #     package='foxglove_bridge',
-        #     executable='foxglove_bridge',
-        #     output='log',
-        #     condition=UnlessCondition(LaunchConfiguration('rviz')),
-        # ),
-
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([
                 FindPackageShare('voris_description'), 'launch', 'voris_visualize.launch.py'])]),
+            condition=IfCondition(LaunchConfiguration('description')),
         ),
-
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(voris_bringup_dir, 'launch', 'sim_ipc_passive.launch.py')),
-            launch_arguments={
-                'namespace': 'Passive',
-                'gazebo_bridge_file': LaunchConfiguration('gazebo_bridge_file'),
-                'slam': LaunchConfiguration('slam'),
-                'settings_file': '/home/daniel/ros2_ws/src/orca5/orca_bringup/cfg/sim.yaml',
-                'voc_file': '/home/daniel/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt',
-                'disparity': LaunchConfiguration('disparity'),
-            }.items(),
-            condition=IfCondition(LaunchConfiguration('passive'))
-        ),
-    ])
+])
