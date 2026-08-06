@@ -1,0 +1,11 @@
+[0.000000] (-) TimerEvent: {}
+[0.000333] (-) JobUnselected: {'identifier': 'orca_base'}
+[0.000355] (-) JobUnselected: {'identifier': 'orca_bridge'}
+[0.000369] (-) JobUnselected: {'identifier': 'orca_msgs'}
+[0.000380] (-) JobUnselected: {'identifier': 'orca_nav2'}
+[0.000391] (-) JobUnselected: {'identifier': 'orca_shared'}
+[0.000401] (-) JobUnselected: {'identifier': 'voris_base'}
+[0.000412] (orca_bringup) JobQueued: {'identifier': 'orca_bringup', 'dependencies': OrderedDict({'orca_msgs': '/home/yasminnunes/workspace/ros2_ws/src/orca5/install/orca_msgs', 'orca_bridge': '/home/yasminnunes/workspace/ros2_ws/src/orca5/install/orca_bridge'})}
+[0.000429] (orca_bringup) JobStarted: {'identifier': 'orca_bringup'}
+[0.005007] (orca_bringup) JobEnded: {'identifier': 'orca_bringup', 'rc': 1}
+[0.015189] (-) EventReactorShutdown: {}

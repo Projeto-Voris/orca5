@@ -662,34 +662,34 @@
            ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
       <sensor name='ping_sonar' type='gpu_lidar'>
         <always_on>1</always_on>
-        <update_rate>10</update_rate>
+        <update_rate>5</update_rate> <!-- 5 Hz segundo o datasheet -->
         <visualize>1</visualize>
         <topic>sonar_link/sensor/sonar</topic>
         <pose>0 0 0 0 1.5707963267948966 0</pose>
         <ray>
           <scan>
             <horizontal>
-              <samples>5</samples>
+              <samples>257</samples>
               <resolution>1</resolution>
-              <min_angle>-0.14835</min_angle>
-              <max_angle>0.14835</max_angle>
+              <min_angle>-0.785398</min_angle> <!-- -45 graus em radianos -->
+              <max_angle>0.785398</max_angle>  <!-- +45 graus em radianos -->
             </horizontal>
             <vertical>
-              <samples>5</samples>
+              <samples>67</samples>
               <resolution>1</resolution>
-              <min_angle>-0.14835</min_angle>
-              <max_angle>0.14835</max_angle>
+              <min_angle>-0.349066</min_angle> <!-- -20 graus em radianos -->
+              <max_angle>0.349066</max_angle>  <!-- +20 graus em radianos -->
             </vertical>
           </scan>
           <range>
             <min>0.2</min>
-            <max>50</max>
-            <resolution>0.02</resolution>
+            <max>15.0</max>
+            <resolution>0.0015</resolution> <!-- 1.5 mm em metros -->
           </range>
           <noise>
             <type>gaussian</type>
-            <mean>0.1</mean>
-            <stddev>0.005</stddev>
+            <mean>0.0</mean>
+            <stddev>0.0015</stddev> <!-- Ajustado para corresponder à precisão -->
           </noise>
         </ray>
       </sensor>
@@ -701,6 +701,85 @@
       <axis>
         <xyz>0 0 1</xyz>
       </axis>
+    </joint>
+
+    <link name='dvl_link'>
+      <pose>-0.075 0.0 -0.3213 0 0 0</pose>
+      <inertial>
+        <mass>0.17</mass>
+        <inertia>
+          <ixx>0.001</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0.001</iyy>
+          <iyz>0</iyz>
+          <izz>0.001</izz>
+        </inertia>
+      </inertial>
+
+      <visual name="dvl_visual">
+        <geometry>
+          <cylinder>
+            <length>0.025</length>
+            <radius>0.033</radius>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0.2 0.0 0.0 1.0</ambient>
+          <diffuse>0.2 0.0 0.0 1.0</diffuse>
+        </material>
+      </visual>
+      <sensor name="A50" type="custom" gz:type="dvl">
+          <pose degrees="true">0 0 0 0 0 0</pose>
+          <always_on>1</always_on>
+          <update_rate>5</update_rate>
+          <topic>/model/bluerov2/dvl/velocity</topic>
+          <gz_frame_id>dvl_link</gz_frame_id>
+          <gz:dvl>
+            <type>phased_array</type>
+            <arrangement degrees="true">
+              <beam id="1">
+                <aperture>2</aperture>
+                <rotation>45</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>135</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>-45</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+              <beam>
+                <aperture>2</aperture>
+                <rotation>-135</rotation>
+                <tilt>22.5</tilt>
+              </beam>
+            </arrangement>
+            <tracking>
+              <bottom_mode>
+                <when>best</when>
+                <noise type="gaussian">
+                  <mean>0.0</mean>
+                  <stddev>0.001</stddev>
+                </noise>
+                <visualize>false</visualize>
+              </bottom_mode>
+            </tracking>
+            <resolution>0.01</resolution>
+            <maximum_range>50.0</maximum_range>
+            <minimum_range>0.1</minimum_range>
+            <reference_frame>0 0 0 0 0 0</reference_frame>
+          </gz:dvl>
+        </sensor>      
+    </link>
+
+    <joint name='dvl_joint' type='fixed'>
+      <parent>base_link </parent>
+      <child>dvl_link</child>
     </joint>
 
     <!-- Publish the ground-truth pose for rviz -->
