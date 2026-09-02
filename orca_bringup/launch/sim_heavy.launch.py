@@ -33,55 +33,35 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, ExecuteProcess, IncludeLaunchDescription
+from launch_ros.actions import ComposableNodeContainer
+from launch_ros.descriptions import ComposableNode
+from launch_ros.substitutions import FindPackageShare
 from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 
 
 def generate_launch_description():
+
     orca_bringup_dir = get_package_share_directory('orca_bringup')
-    orca_description_dir = get_package_share_directory('orca_bringup')
+    voris_bringup_dir = get_package_share_directory('voris_bringup')
 
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub_heavy.parm')
     mavros_params_file = os.path.join(orca_bringup_dir, 'param', 'sim_mavros_params.yaml')
-    orca_params_file = os.path.join(orca_bringup_dir, 'param', 'sim_heavy_params.yaml')
-    rviz_file = os.path.join(orca_bringup_dir, 'cfg', 'heavy_sim_launch.rviz')
-    world_file = os.path.join(orca_description_dir, 'worlds', 'inpetu_heavy.world')
-
-    sim_left_ini = os.path.join(orca_bringup_dir, 'cfg', 'camera_info', 'sim_left.ini')
-    sim_right_ini = os.path.join(orca_bringup_dir, 'cfg', 'camera_info', 'sim_right.ini')
+    rviz_file = os.path.join(orca_bringup_dir, 'rviz', 'sim_heavy.rviz')
+    world_file = os.path.join(orca_bringup_dir, 'worlds', 'inpetu_heavy.world')
+    
     return LaunchDescription([
-        DeclareLaunchArgument(
-            'ardusub',
-            default_value='True',
-            description='Launch ArduSUB with SIM_JSON?'
-        ),
-
-        DeclareLaunchArgument(
-            'gzclient',
-            default_value='True',
-            description='Launch Gazebo UI?'
-        ),
-
-        DeclareLaunchArgument(
-            'mavros',
-            default_value='True',
-            description='Launch mavros?',
-        ),
-
-        DeclareLaunchArgument(
-            'slam',
-            default_value='False',
-            description='Launch navigation?',
-        ),
-
-        DeclareLaunchArgument(
-            'rviz',
-            default_value='True',
-            description='Launch rviz?',
-        ),
-
+        DeclareLaunchArgument('ardusub', default_value='True', description='Launch ArduSUB with SIM_JSON?'),
+        DeclareLaunchArgument( 'gzclient', default_value='True', description='Launch Gazebo UI?'),
+        DeclareLaunchArgument( 'mavros', default_value='True', description='Launch mavros?'),
+        DeclareLaunchArgument('rviz', default_value='True', description='Launch rviz?'),
+        DeclareLaunchArgument('passive', default_value='True', description='Launch Passive stereo process'),
+        DeclareLaunchArgument('slam', default_value='True', description='Enable SLAM in passive stereo process?'),
+        DeclareLaunchArgument('disparity', default_value='True', description='Enable disparity in passive stereo process?'),
+        DeclareLaunchArgument('gazebo_bridge_file', default_value=PathJoinSubstitution([FindPackageShare('orca_bringup'), 'cfg', 'gzbridge_config.yaml']), description='Caminho para o arquivo de configuração do Gazebo Bridge'), 
+       
        # Launch rviz
         ExecuteProcess(
             cmd=['rviz2', '-d', rviz_file],
@@ -89,19 +69,13 @@ def generate_launch_description():
             condition=IfCondition(LaunchConfiguration('rviz')),
         ),
 
-        # 2. Define the ArduSub process
+        # 1. Define the ArduSub process
         ExecuteProcess(
-            cmd=[
-                'ardusub',
-                '-w',
-                '-M', 'JSON',
-                # '--model','vectored_6dof',
-                '--defaults', ardusub_params_file,
-                '-I0',
-                '--home', '33.810313,-118.39386700000001,0.0,0'
-            ],
+            cmd=['ardusub', '-w', '-M', 'JSON','--defaults', ardusub_params_file,
+                '-I0','--home', '-27.430278, -48.443520, 0.0, 0'],
             output='screen',
             condition=IfCondition(LaunchConfiguration('ardusub')),
+
         ),
 
         # Launch Gazebo Sim
@@ -120,99 +94,64 @@ def generate_launch_description():
             condition=UnlessCondition(LaunchConfiguration('gzclient')),
         ),
 
-        #   # Get images from Gazebo Sim to ROS
-        # Node(
-        #     package='ros_gz_image',
-        #     executable='image_bridge',
-        #     arguments=['Passive/left/image_raw', 'Passive/right/image_raw'],
-        #     output='screen',
-        # ),
-
-        # # Gazebo Sim doesn't publish camera info, so do that here
-        # Node(
-        #     package='orca_base',
-        #     executable='camera_info_publisher',
-        #     name='left_info_publisher',
-        #     output='screen',
-        #     parameters=[{
-        #         'camera_info_url': 'file://' + sim_left_ini,
-        #         'camera_name': 'left_camera',
-        #         'frame_id': 'left_camera_link',
-        #         'timer_period_ms': 50,
-        #         'use_sim_time': True,
-        #     }],
-        #     remappings=[
-        #         ('/camera_info', '/Passive/left/camera_info'),
-        #     ],
-        # ),
-
-        # Node(
-        #     package='orca_base',
-        #     executable='camera_info_publisher',
-        #     name='right_info_publisher',
-        #     output='screen',
-        #     parameters=[{
-        #         'camera_info_url': 'file://' + sim_right_ini,
-        #         'camera_name': 'right_camera',
-        #         'frame_id': 'right_camera_link',
-        #         'timer_period_ms': 50,
-        #         'use_sim_time': True,
-        #     }],
-        #     remappings=[
-        #         ('/camera_info', '/Passive/right/camera_info'),
-        #     ],
-        # ),
-        
-        # Node(
-        # package='ros_gz_bridge',
-        # executable='parameter_bridge',
-        # name='clock_bridge',
-        # parameters=[{
-        #     'use_sim_time': False # A ponte em si não usa sim_time, ela o gera
-        # }],
-        # arguments=[
-        #     '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
-        # ],
-        # output='screen'
-        # ),
-
-        # # Publish ground truth pose from Ignition Gazebo
         # Node(
         #     package='ros_gz_bridge',
         #     executable='parameter_bridge',
-        #     arguments=[
-        #         '/model/bluerov2/odometry@nav_msgs/msg/Odometry[gz.msgs.Odometry',
-        #     ],
-        #     output='screen'
-        # ),
-        # Node(
-        #     package='ros_gz_bridge',
-        #     executable='parameter_bridge',
-        #     arguments=[
-        #         '/model/bluerov2/pose@geometry_msgs/msg/PoseArray[gz.msgs.Pose_V',
-        #     ],
-        #     output='screen'
-        # ),
-        # # Publish IMU with remapping
-        # Node(
-        #     package='ros_gz_bridge',
-        #     executable='parameter_bridge',
-        #     arguments=[
-        #         '/world/inpetu/model/bluerov2/link/base_link/sensor/imu_sensor/imu@sensor_msgs/msg/Imu[gz.msgs.IMU',
-        #     ],
+        #     parameters=[{'config_file': gz_bridge_file}],
         #     output='screen',
-        #     remappings=[
-        #         ('/world/inpetu/model/bluerov2/link/base_link/sensor/imu_sensor/imu', 'model/bluerov2/imu')
-        #     ]
+        # ),
+        # ComposableNodeContainer(
+        #         name='lidar_container',
+        #         namespace='',
+        #         package='rclcpp_components',
+        #         executable='component_container',
+        #         composable_node_descriptions=[
+        #             ComposableNode(
+        #                 package='ros_gz_bridge',
+        #                 plugin='ros_gz_bridge::RosGzBridge',
+        #                 parameters=[{
+        #                     'config_file': LaunchConfiguration('gazebo_bridge_file'),
+        #                     'use_sim_time': True, # Vital para sincronia com Gazebo 
+        #                     'use_intra_process_comms': True # Habilita Zero-Copy [cite: 355, 410]
+        #                 }]
+        #             ),
+        #         ],
+        #         output='screen',
         # ),
 
-        # Bring up Orca and Nav2 nodes
+        # Translate messages MAV <-> ROS
+        Node(
+            package='mavros',
+            executable='mavros_node',
+            output='screen',
+            # mavros_node is actually many nodes, so we can't override the name
+            # name='mavros_node',
+            parameters=[mavros_params_file],
+            condition=IfCondition(LaunchConfiguration('mavros')),
+        ),
+
+        Node(
+            package='foxglove_bridge',
+            executable='foxglove_bridge',
+            output='log',
+            condition=UnlessCondition(LaunchConfiguration('rviz')),
+        ),
+
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(orca_bringup_dir, 'launch', 'bringup_hvy.py')),
+            PythonLaunchDescriptionSource([PathJoinSubstitution([
+                FindPackageShare('voris_description'), 'launch', 'voris_visualize.launch.py'])]),
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(os.path.join(voris_bringup_dir, 'launch', 'sim_ipc_passive.launch.py')),
             launch_arguments={
-                'mavros': LaunchConfiguration('mavros'),
-                'mavros_params_file': mavros_params_file,
-                'orca_params_file': orca_params_file,
+                'namespace': 'Passive',
+                'gazebo_bridge_file': LaunchConfiguration('gazebo_bridge_file'),
+                'slam': LaunchConfiguration('slam'),
+                'settings_file': '/home/yasminnunes/ros2_ws/src/orca5/orca_bringup/cfg/sim.yaml',
+                'voc_file': '/home/yasminnunes/ros2_ws/src/orbslam3_ros2/orbslam3_ros2/vocabulary/ORBvoc.txt',
+                'disparity': LaunchConfiguration('disparity'),
             }.items(),
+            condition=IfCondition(LaunchConfiguration('passive'))
         ),
     ])

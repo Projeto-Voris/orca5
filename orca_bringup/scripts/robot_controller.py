@@ -18,8 +18,8 @@ class RobotController(Node):
         self.mode = ""
         self.connected = False
 
-        self.target = None
-        self.vel = None
+        self.target = (0.0, 0.0, 0.0)
+        self.vel = (0.0, 0.0, 0.0)
         self.current_pose = None
         self.setpoint_timer = self.create_timer(0.05, self.publish_setpoints) # 20HZ para FCU conseguir ler
         self.velocity_timer = self.create_timer(0.05, self.publish_velocity) # 20HZ para FCU conseguir ler

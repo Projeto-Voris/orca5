@@ -4,18 +4,15 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /TF1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /PointCloud21/Autocompute Value Bounds1
-        - /orbslam3 debug1
-        - /Pose1/Topic1
-        - /Odometry1/Shape1
-        - /Pose2
-        - /Pose2/Topic1
-        - /PointCloud22
-        - /PointCloud22/Topic1
+        - /SLAM Pointcloud1/Autocompute Value Bounds1
+        - /EKF Pose1/Topic1
+        - /GT Odom1/Shape1
+        - /Vision Pose1/Topic1
       Splitter Ratio: 0.5
-    Tree Height: 420
+    Tree Height: 483
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -93,7 +90,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        sonar_frame:
+        sonar_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -124,33 +121,27 @@ Visualization Manager:
       Frames:
         All Enabled: false
         Passive/left_camera_enu_link:
-          Value: true
+          Value: false
         Passive/left_camera_link:
-          Value: true
+          Value: false
         Passive/right_camera_enu_link:
-          Value: true
+          Value: false
         Passive/right_camera_link:
-          Value: true
+          Value: false
         base_link:
           Value: true
         base_link_frd:
           Value: false
         bluerov2_fpv_link:
-          Value: true
+          Value: false
         map:
           Value: true
         map_ned:
           Value: false
-        odom:
-          Value: true
-        odom_ned:
+        sonar_link:
           Value: false
-        orbslam3:
-          Value: true
-        sonar_frame:
-          Value: true
         stim3600_link:
-          Value: true
+          Value: false
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -171,13 +162,11 @@ Visualization Manager:
               {}
             bluerov2_fpv_link:
               {}
-            sonar_frame:
+            sonar_link:
               {}
             stim3600_link:
               {}
           map_ned:
-            {}
-          orbslam3:
             {}
       Update Interval: 0
       Value: true
@@ -212,8 +201,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 0.2431221455335617
-        Min Value: -3.999035358428955
+        Max Value: 1.5923588275909424
+        Min Value: -3.2088117599487305
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -227,7 +216,7 @@ Visualization Manager:
       Max Intensity: 4096
       Min Color: 0; 0; 0
       Min Intensity: 0
-      Name: PointCloud2
+      Name: SLAM Pointcloud
       Position Transformer: XYZ
       Selectable: true
       Size (Pixels): 3
@@ -242,8 +231,74 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
-    - Class: rviz_default_plugins/Image
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
       Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Disparity pointcloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /Passive/disparity/pointcloud
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 5.312023162841797
+        Min Value: 0.13289250433444977
+        Value: true
+      Axis: X
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: AxisColor
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 0
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: Sonar3D pointcloud
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /sonar_3d/pointcloud
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
+    - Class: rviz_default_plugins/Image
+      Enabled: false
       Max Value: 1
       Median window: 5
       Min Value: 0
@@ -255,7 +310,21 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /Passive/tracked_image
-      Value: true
+      Value: false
+    - Class: rviz_default_plugins/Image
+      Enabled: false
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: Disparity image
+      Normalize Range: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /Passive/tracked_image
+      Value: false
     - Class: rviz_default_plugins/Image
       Enabled: true
       Max Value: 1
@@ -292,7 +361,7 @@ Visualization Manager:
       Enabled: true
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
-      Name: Pose
+      Name: EKF Pose
       Shaft Length: 1
       Shaft Radius: 0.05000000074505806
       Shape: Arrow
@@ -323,7 +392,7 @@ Visualization Manager:
         Value: false
       Enabled: true
       Keep: 1
-      Name: Odometry
+      Name: GT Odom
       Position Tolerance: 0.009999999776482582
       Shape:
         Alpha: 1
@@ -351,7 +420,7 @@ Visualization Manager:
       Enabled: true
       Head Length: 0.30000001192092896
       Head Radius: 0.10000000149011612
-      Name: Pose
+      Name: Vision Pose
       Shaft Length: 1
       Shaft Radius: 0.05000000074505806
       Shape: Arrow
@@ -360,41 +429,8 @@ Visualization Manager:
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /mavros/vision_pose/pose
-      Value: true
-    - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: ""
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: PointCloud2
-      Position Transformer: ""
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.009999999776482582
-      Style: Points
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /Passive/disparity/pointcloud
-      Use Fixed Frame: true
-      Use rainbow: true
+        Value: /mavros/vision_pose/pose
       Value: true
   Enabled: true
   Global Options:
@@ -442,7 +478,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 11.4633207321167
+      Distance: 6.040721416473389
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -457,18 +493,20 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5149999260902405
+      Pitch: 1.1199994087219238
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.9699952602386475
+      Yaw: 1.3349987268447876
     Saved: ~
 Window Geometry:
+  Disparity image:
+    collapsed: false
   Displays:
     collapsed: false
-  Height: 1043
+  Height: 1011
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd000000040000000000000215000003b5fc020000000dfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000003f00000258000000eb0100001efa000000010100000002fb0000000a005600690065007700730100000000ffffffff0000010000fffffffb000000100044006900730070006c0061007900730100000000000002e50000015600fffffffb0000000a0049006d00610067006501000005df000001bc0000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d0061006700650000000406000002080000000000000000fb0000001c006f007200620073006c0061006d0033002000640065006200750067010000029d0000006e0000001700fffffffb00000008006c00650066007401000003110000006f0000001700fffffffb0000000a0052006900670068007401000003860000006e0000001700ffffff000000010000010f000007e3fc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d0065010000000000000450000000000000000000000565000003b500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000021500000395fc020000000efb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afc0000003f00000297000000eb0100001efa000000010100000002fb0000000a005600690065007700730100000000ffffffff0000010000fffffffb000000100044006900730070006c0061007900730100000000000002e50000015600fffffffb0000001c006f007200620073006c0061006d00330020006400650062007500670000000236000000770000001700fffffffb0000000a0049006d00610067006501000005df000001bc0000000000000000fb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d0061006700650000000406000002080000000000000000fb0000001e00440069007300700061007200690074007900200069006d00610067006500000002860000006f0000001700fffffffb00000008006c00650066007401000002dc000000790000001700fffffffb0000000a00520069006700680074010000035b000000790000001700ffffff000000010000010f000007e3fc0200000002fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000005650000039500000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Right:
     collapsed: false
   Selection:
@@ -478,8 +516,8 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1920
-  X: 1920
-  Y: 0
+  X: 2626
+  Y: 32
   left:
     collapsed: false
   orbslam3 debug:

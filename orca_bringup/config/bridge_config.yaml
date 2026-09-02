@@ -1,6 +1,7 @@
-# bridge_config.yaml
+
+# Left passive images and camera info
 - ros_topic_name: "/Passive/left/image_raw"
-  gz_topic_name: "/Passive/left/image"
+  gz_topic_name: "/Passive/left/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: "GZ_TO_ROS"
@@ -11,8 +12,9 @@
   gz_type_name: "gz.msgs.CameraInfo"
   direction: "GZ_TO_ROS"
   
+# Right passive images and camera info
 - ros_topic_name: "/Passive/right/image_raw"
-  gz_topic_name: "/Passive/right/image"
+  gz_topic_name: "/Passive/right/image_raw"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "gz.msgs.Image"
   direction: "GZ_TO_ROS"
@@ -23,6 +25,18 @@
   gz_type_name: "gz.msgs.CameraInfo"
   direction: "GZ_TO_ROS"
 
+# Sonar 3D-15 pointcloud (gpu_laser)
+- ros_topic_name: "/model/bluerov2/sonar3d/pointcloud"
+  gz_topic_name: "/model/bluerov2/sonar3d/point_cloud" 
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  direction: GZ_TO_ROS
+
+# - ros_topic_name: "/sonar_3d"
+#   gz_topic_name: "/sonar_3d"
+#   ros_type_name: "sensor_msgs/msg/LaserScan"
+#   gz_type_name: "gz.msgs.LaserScan"
+#   direction: GZ_TO_ROS
 
 # Ground Truth Odometry
 - ros_topic_name: "/model/bluerov2/odometry"
@@ -38,17 +52,23 @@
   gz_type_name: "gz.msgs.Pose_V"
   direction: "GZ_TO_ROS"
 
-# IMU com o remapeamento desejado aplicado diretamente no nome do tópico ROS
-- ros_topic_name: "model/bluerov2/imu"
+# IMU
+- ros_topic_name: "/model/bluerov2/imu"
   gz_topic_name: "/world/inpetu/model/bluerov2/link/base_link/sensor/imu_sensor/imu"
   ros_type_name: "sensor_msgs/msg/Imu"
   gz_type_name: "gz.msgs.IMU"
   direction: "GZ_TO_ROS"
 
+# DVL
+- ros_topic_name: "/model/bluerov2/dvl/velocity"
+  gz_topic_name: "/model/bluerov2/dvl/velocity"
+  ros_type_name: "marine_acoustic_msgs/msg/Dvl"
+  gz_type_name: "gz.msgs.DVLVelocityTracking"
+  direction: "GZ_TO_ROS"
+
+# Clock
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"
   gz_type_name: "gz.msgs.Clock"
   direction: "GZ_TO_ROS"
-
-  

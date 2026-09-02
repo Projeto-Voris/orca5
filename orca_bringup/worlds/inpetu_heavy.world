@@ -38,6 +38,13 @@
                 name="gz::sim::systems::Imu">
         </plugin>
 
+
+        <!-- DVL plugin manages all DVL sensors -->
+        <plugin
+            filename="gz-sim-doppler-velocity-log-system"
+            name="gz::sim::systems::DopplerVelocityLogSystem">
+        </plugin>
+
         <!-- Buoyancy plugin manages buoyancy for all models -->
         <plugin
                 filename="gz-sim-buoyancy-system"
