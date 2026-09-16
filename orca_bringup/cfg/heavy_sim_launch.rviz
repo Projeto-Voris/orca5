@@ -8,10 +8,12 @@ Panels:
         - /TF1/Tree1
         - /PointCloud21/Autocompute Value Bounds1
         - /Pose1/Topic1
+        - /Odometry1
+        - /Odometry1/Topic1
         - /Odometry1/Shape1
         - /Pose2/Topic1
-        - /Path2
-        - /Path3
+        - /Path2/Status1
+        - /Path2/Topic1
       Splitter Ratio: 0.5
     Tree Height: 399
   - Class: rviz_common/Selection
@@ -153,8 +155,8 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 1.9512052536010742
-        Min Value: -3.058903694152832
+        Max Value: 1.6734257936477661
+        Min Value: -3.2453560829162598
         Value: true
       Axis: Z
       Channel Name: intensity
@@ -281,8 +283,8 @@ Visualization Manager:
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /model/bluerov2/odometry
+        Reliability Policy: Best Effort
+        Value: /mavros/local_position/odom
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -341,7 +343,7 @@ Visualization Manager:
       Buffer Length: 1
       Class: rviz_default_plugins/Path
       Color: 25; 255; 0
-      Enabled: true
+      Enabled: false
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
@@ -363,8 +365,8 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /Nav/local_path
-      Value: true
+        Value: /navigation/local_path
+      Value: false
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
@@ -391,7 +393,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /Nav/transformed_path
+        Value: /navigation/transformed_path
       Value: true
   Enabled: true
   Global Options:
@@ -454,10 +456,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.239998459815979
+      Pitch: 0.30479705333709717
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 2.8868114948272705
+      Yaw: 2.751812696456909
     Saved: ~
 Window Geometry:
   Displays:
