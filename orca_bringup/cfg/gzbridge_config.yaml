@@ -27,7 +27,7 @@
 
 # Sonar 3D-15 pointcloud (gpu_laser)
 - ros_topic_name: "/model/bluerov2/sonar3d/pointcloud"
-  gz_topic_name: "/sonar_3d/points"
+  gz_topic_name: "/model/bluerov2/sonar3d/point_cloud/points" 
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   direction: GZ_TO_ROS
@@ -53,7 +53,7 @@
   direction: "GZ_TO_ROS"
 
 # IMU
-- ros_topic_name: "model/bluerov2/imu"
+- ros_topic_name: "/model/bluerov2/imu"
   gz_topic_name: "/world/inpetu/model/bluerov2/link/base_link/sensor/imu_sensor/imu"
   ros_type_name: "sensor_msgs/msg/Imu"
   gz_type_name: "gz.msgs.IMU"

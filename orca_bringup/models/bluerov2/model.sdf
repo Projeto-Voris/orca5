@@ -720,9 +720,9 @@
            ardupilot_gazebo will pick the minimum value and send it as a rangefinder reading. -->
       <sensor name="sonar_3d" type="gpu_lidar">
       <pose>0 0 0 0 0 0</pose>
-      <topic>sonar_3d</topic>
+      <topic>/model/bluerov2/sonar3d/point_cloud</topic>
       <update_rate>20</update_rate>
-      <gz_frame_id>base_link</gz_frame_id>
+      <gz_frame_id>sonar_sim_link</gz_frame_id>
       <lidar>
         <scan>
           <horizontal>
@@ -790,7 +790,7 @@
           <always_on>1</always_on>
           <update_rate>5</update_rate>
           <topic>/model/bluerov2/dvl/velocity</topic>
-          <gz_frame_id>dvl_link</gz_frame_id>
+          <gz_frame_id>dvl_sim_link</gz_frame_id>
           <gz:dvl>
             <type>phased_array</type>
             <arrangement degrees="true">
@@ -828,7 +828,7 @@
             <resolution>0.01</resolution>
             <maximum_range>50.0</maximum_range>
             <minimum_range>0.1</minimum_range>
-            <reference_frame>0 0 0 3.141592653589793 0 0</reference_frame>
+            <!-- <reference_frame>0 0 0 3.141592653589793 0 0</reference_frame> -->
           </gz:dvl>
         </sensor>      
     </link>
