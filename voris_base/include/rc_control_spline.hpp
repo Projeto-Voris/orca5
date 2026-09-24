@@ -1,0 +1,134 @@
+#ifndef RC_CONTROL_SPLINE_HPP
+#define RC_CONTROL_SPLINE_HPP
+
+#include <memory>
+#include <string>
+#include <vector>
+#include <cmath>
+
+#include <rclcpp/rclcpp.hpp>
+#include "mavros_msgs/msg/override_rc_in.hpp"
+#include "mavros_msgs/srv/command_bool.hpp"
+#include "mavros_msgs/srv/set_mode.hpp"
+#include "mavros_msgs/msg/state.hpp"
+#include "geometry_msgs/msg/pose_stamped.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "nav_msgs/msg/path.hpp"
+#include "geometry_msgs/msg/twist.hpp"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include "tf2/utils.h"
+#include "tf2_ros/transform_broadcaster.hpp"
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <Eigen/Dense>
+#include <unsupported/Eigen/Splines>
+#include <csignal>
+
+class RCControlSpline : public rclcpp::Node
+{
+public:
+    RCControlSpline();
+    bool disarm();
+
+    static std::shared_ptr<RCControlSpline> instance;
+    static void sigintHandler(int);
+
+private:
+    bool connected_{};
+    bool armed_{};
+    std::string mode_ = "";
+
+    // Subscribers 
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr odom_sub_;
+    void odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & msg);
+
+    rclcpp::Subscription<mavros_msgs::msg::State>::SharedPtr state_sub_;
+    void state_cb(const mavros_msgs::msg::State::ConstSharedPtr & msg);
+
+    // Current robot state
+    geometry_msgs::msg::PoseStamped current_pose_;
+    geometry_msgs::msg::Twist current_vel_;
+    geometry_msgs::msg::PoseStamped pose_odom_;
+
+    // Publishers
+    rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr path_pub_;
+
+    // Services
+    rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr mavros_arm_client_;
+    rclcpp::Client<mavros_msgs::srv::SetMode>::SharedPtr mavros_set_mode_client_;   
+
+    // timer
+    rclcpp::TimerBase::SharedPtr timer_;
+
+    // functions
+    bool set_arm(bool arm);
+    bool set_mode(const std::string & mode);
+    uint16_t map_pwm(float value, bool reverse, float threshold);
+    void publish_rc(float forward, float lateral, float depth, float yaw);
+    void follow_spline_curve();
+    void publish_path();
+
+    struct waypoint
+    {
+        double x;
+        double y;
+        double z;
+    };
+
+    // Definitions
+    std::vector<waypoint> wp_;
+    double gain_;
+    size_t index_wp_;
+    waypoint points_relative;
+
+    void generateTrajectory();
+    void generateWaypoints();
+    std::vector<waypoint> trajectory_;
+    std::vector<waypoint> trajectory_transformed_;
+    size_t trajectory_index_;
+
+    enum class TrajectoryType
+    {
+        SQUARE,
+        CIRCLE,
+        SPIRAL
+    };
+
+    struct TrajectoryParams
+    {
+        double delta = 0.2;      // distance between points
+        double side = 2.0;       // square
+        double radius = 1.0;     // circle/spiral
+        double dz = -1.0;         // spiral steps in z
+        int turns = 4;           // spiral turns in z
+    };
+
+    struct DuctPosition
+    {
+        double pdx = 3.0;
+        double pdy = 1.5;
+        double pdz = -1.0;
+    };
+
+    TrajectoryType trajectory_type_ = TrajectoryType::CIRCLE;
+    TrajectoryParams trajectory_params_;
+    DuctPosition duct_position_;
+
+    rclcpp::TimerBase::SharedPtr timer_tf_;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+
+    bool set_origin_ = false;
+    double origin_x_;
+    double origin_y_;
+    double origin_z_;
+
+    tf2::Transform T_start_map_;
+    tf2::Transform T_map_start;
+    tf2::Quaternion lookAtTheDuct(size_t index, const geometry_msgs::msg::Point& robot_position);
+    std::vector<tf2::Quaternion> trajectory_orientation_;
+};
+
+#endif // RC_CONTROL_SPLINE_HPP
