@@ -8,6 +8,11 @@ RCControl::RCControl() : Node("rc_control")
     // Initialize publishers
     rc_pub_ = this->create_publisher<mavros_msgs::msg::OverrideRCIn>("mavros/rc/override", 10);
 
+    // Real trajectorie 
+    ws_pub_ = this->create_publisher<nav_msgs::msg::Path>("/waypoints", 10);
+    void publish_ws();
+
+
     // Initialize services
     mavros_arm_client_ = this->create_client<mavros_msgs::srv::CommandBool>("mavros/cmd/arming");
     mavros_set_mode_client_ = this->create_client<mavros_msgs::srv::SetMode>("/mavros/set_mode");
@@ -58,13 +63,15 @@ void RCControl::state_cb(const mavros_msgs::msg::State::ConstSharedPtr & msg)
 
 void RCControl::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & msg)
 {
-    // position (position and orientation)
+    // Atualiza pose e velocidade atuais
     current_pose_.header = msg->header;
     current_pose_.pose = msg->pose.pose;
-    // RCLCPP_INFO(this->get_logger(), "x:%4f | y:%4f", current_pose_.pose.position.x, current_pose_.pose.position.y);
-
-    // velocity (linear and angular)
     current_vel_ = msg->twist.twist;
+
+    // Configura o header e adiciona o ponto atual no vetor acumulativo
+    path_msg_.header.stamp = msg->header.stamp;
+    path_msg_.header.frame_id = msg->header.frame_id;
+    path_msg_.poses.push_back(current_pose_); // <-- guarda o ponto no histórico!
 
     if (!set_origin_)
     {
@@ -74,9 +81,8 @@ void RCControl::odom_cb(const nav_msgs::msg::Odometry::ConstSharedPtr & msg)
 
         set_origin_ = true;
 
-        RCLCPP_INFO_ONCE(this->get_logger(), "origin_x:%4f | origin_y:%4f | origin_z:%4f", origin_x_, origin_y_,origin_z_);
+        RCLCPP_INFO_ONCE(this->get_logger(), "origin_x:%4f | origin_y:%4f | origin_z:%4f", origin_x_, origin_y_, origin_z_);
     }
-    RCLCPP_INFO_ONCE(this->get_logger(), "header_frame_id:%s ", current_pose_.header.frame_id.c_str());
 }
 
 void RCControl::transform_map_to_odom()
@@ -172,6 +178,12 @@ void RCControl::publish_rc(float forward, float lateral, float depth, float yaw)
     // RCLCPP_INFO(this->get_logger(), "MOV: Frwd:%4d | Side:%4d | depth:%4d | yaw:%4d ", rc_msg.channels[5 - 1], rc_msg.channels[6 - 1], rc_msg.channels[3 - 1], rc_msg.channels[4 - 1]);
 
     rc_pub_->publish(rc_msg);
+}
+
+void RCControl::publish_ws()
+{
+    if (!set_origin_) return;
+    ws_pub_->publish(path_msg_);
 }
 
 void RCControl::follow_wp()
@@ -282,6 +294,7 @@ void RCControl::follow_wp()
     RCLCPP_INFO(this->get_logger(), "forward:%4f", forward_cmd);
     RCLCPP_INFO(this->get_logger(), "error_z:%4f", error_z);
     publish_rc(forward_cmd, 0.0, error_z, 0.0);
+    this->publish_ws();
 }
 
 int main(int argc, char **argv)

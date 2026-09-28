@@ -15,6 +15,7 @@
 #include "nav_msgs/msg/odometry.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
+#include <nav_msgs/msg/path.hpp> 
 #include "tf2/utils.h"
 #include "tf2_ros/transform_broadcaster.hpp"
 #include <tf2_ros/transform_listener.h>
@@ -27,6 +28,7 @@ class RCControl : public rclcpp::Node
 {
 public:
     RCControl();
+    void publish_ws();
 
 private:
     bool connected_{};
@@ -49,6 +51,8 @@ private:
 
     // Publishers
     rclcpp::Publisher<mavros_msgs::msg::OverrideRCIn>::SharedPtr rc_pub_;
+    rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr ws_pub_;
+    nav_msgs::msg::Path path_msg_;
 
     // Services
     rclcpp::Client<mavros_msgs::srv::CommandBool>::SharedPtr mavros_arm_client_;

@@ -550,8 +550,8 @@
           <camera>
             <horizontal_fov>1.6</horizontal_fov>
             <image>
-              <width>640</width>
-              <height>480</height>
+              <width>1600</width>
+              <height>1200</height>
               <format>B8G8R8</format>
             </image>
             <distortion>
