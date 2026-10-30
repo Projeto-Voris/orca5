@@ -50,7 +50,8 @@ def generate_launch_description():
     ardusub_params_file = os.path.join(orca_bringup_dir, 'cfg', 'sub_heavy.parm')
     mavros_params_file = os.path.join(orca_bringup_dir, 'param', 'sim_mavros_params.yaml')
     rviz_file = os.path.join(orca_bringup_dir, 'rviz', 'sim_heavy.rviz')
-    world_file = os.path.join(orca_bringup_dir, 'worlds', 'inpetu_heavy.world')
+    # File name inside orca_bringup/worlds, or an absolute path
+    world_file = PathJoinSubstitution([orca_bringup_dir, 'worlds', LaunchConfiguration('world')])
     
     return LaunchDescription([
         DeclareLaunchArgument('ardusub', default_value='True', description='Launch ArduSUB with SIM_JSON?'),
@@ -58,6 +59,9 @@ def generate_launch_description():
         DeclareLaunchArgument( 'mavros', default_value='True', description='Launch mavros?'),
         DeclareLaunchArgument('description', default_value='True', description='Publish robot_description?'),
         DeclareLaunchArgument('rviz', default_value='True', description='Launch rviz?'),
+        DeclareLaunchArgument('world', default_value='inpetu_heavy.world',
+                              description='World file in orca_bringup/worlds: inpetu_heavy.world (inpetu pool), '
+                                          'corredor_heavy.world (36 m corridor) or labirinto_heavy.world (100 x 100 m maze)'),
        
        # Launch rviz
         ExecuteProcess(
